@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>User management | RaXa Systems</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+
+
+  <!-- same theme choice as index.html / login.html (light / dark) -->
+  <script>
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem("raxa-theme"); } catch (e) {}
+      if (!t) t = (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+
+  <style>
+    :root {
+      --bg: #ffffff;
+      --sec: #f1f6fc;
+      --ink: #12263a;
+      --sub: #4a5d70;
+      --rx-blue: #2f72bf;
+      --rx-lime: #95d600;
+      --rx-ico: #1f64ad;
+      --rx-tile-bg: #ffffff;
+      --rx-tile-text: #12263a;
+      --rx-cloud-1: #ffffff;
+      --rx-cloud-2: #eaf2fb;
+      --card: #ffffff;
+      --line: #c5d3e2;
+      --field: #f1f6fc;
+      --ok-ink: #4a7000;
+      --trial: #ff7a45;
+      --trial-late: #ff4d4f;
+      --nav-bg: #12263a;
+    }
+    :root[data-theme="dark"] {
+      --bg: #0b1826;
+      --sec: #0f2031;
+      --ink: #eef1f7;
+      --sub: #9fb2c6;
+      --rx-blue: #3d86d6;
+      --rx-ico: #7db8f0;
+      --card: #14293e;
+      --line: #2c4a68;
+      --field: #0d1c2b;
+      --ok-ink: #b6ec3a;
+      --rx-tile-bg: #14293e;
+      --rx-tile-text: #eef1f7;
+      --rx-cloud-1: #1a3652;
+      --rx-cloud-2: #11263a;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: var(--sec);
+      color: var(--ink);
+      font: 500 clamp(16px, .4vw + 14px, 18px)/1.5 "Plus Jakarta Sans", system-ui, sans-serif;
+    }
+
+    /* ---------- Top nav: user + account ID, then the trial countdown ---------- */
+    .nav {
+      position: sticky; top: 0; z-index: 500;
+      display: flex; align-items: center; gap: clamp(10px, 2vw, 20px); flex-wrap: wrap;
+      min-height: 64px;
+      padding: 8px clamp(16px, 5vw, 64px);
+      padding-top: max(8px, env(safe-area-inset-top, 0px));
+      background: var(--nav-bg);
+      box-shadow: 0 2px 14px rgba(8, 18, 30, .25);
+    }
+    :root[data-theme="dark"] .nav { border-bottom: 1px solid #24405a; }
+
+    .user { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .avatar {
+      flex: none;
+      display: grid; place-items: center;
+      width: 40px; height: 40px;
+      background: var(--rx-lime); color: #12263a;
+      border-radius: 50%;
+      font-weight: 800; font-size: 17px;
+    }
+    .who { min-width: 0; line-height: 1.2; }
+    .who-name {
+      display: block;
+      color: #eef1f7; font-weight: 800; font-size: clamp(14px, .4vw + 13px, 16px);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: min(46vw, 320px);
+    }
+    .who-id { display: block; color: #9fb2c6; font-weight: 700; font-size: 12.5px; }
+    .who-id a { color: inherit; }
+
+    .trial {
+      display: inline-block;
+      padding: .45em 1em;
+      color: var(--trial);
+      border: 2px solid var(--trial);
+      border-radius: 99px;
+      font: 800 clamp(13px, .3vw + 12px, 15px) "Plus Jakarta Sans", system-ui, sans-serif;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .trial.is-ended { color: var(--trial-late); border-color: var(--trial-late); }
+    .trial.is-loading { opacity: .6; }
+
+    /* same pill as the Sign in button on index.html: lime outline, lime fill on hover */
+    .nav-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .logout {
+      padding: .5em clamp(12px, 1.4vw, 18px);
+      background: transparent;
+      color: #eef1f7;
+      border: 2px solid var(--rx-lime);
+      border-radius: 99px;
+      font: 700 clamp(13px, .3vw + 12px, 15px) "Plus Jakarta Sans", system-ui, sans-serif;
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+    .logout:hover, .logout:focus-visible { background: var(--rx-lime); color: #12263a; }
+
+    /* sun / moon toggle: shows the moon in light theme (go dark) and the sun in dark theme (go light) */
+    .theme {
+      display: grid; place-items: center;
+      width: 40px; height: 40px; padding: 0;
+      background: transparent; color: #eef1f7;
+      border: 2px solid var(--rx-lime); border-radius: 50%;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+    .theme:hover, .theme:focus-visible { background: var(--rx-lime); color: #12263a; }
+    .theme svg { width: 20px; height: 20px; }
+    .theme .i-sun { display: none; }
+    :root[data-theme="dark"] .theme .i-sun { display: block; }
+    :root[data-theme="dark"] .theme .i-moon { display: none; }
+
+    /* ---------- Page: user management ---------- */
+    .wrap { max-width: 1280px; margin: 0 auto; }
+    main { flex: 1; padding: clamp(28px, 5vw, 64px) clamp(16px, 5vw, 64px) calc(clamp(32px, 6vw, 72px) + env(safe-area-inset-bottom, 0px)); }
+    .head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+    .head h1 { margin: 0; font-size: clamp(32px, 5vw, 56px); line-height: 1.05; letter-spacing: -.03em; font-weight: 800; }
+    .head p { margin: 6px 0 0; color: var(--sub); }
+    .btn-add {
+      padding: .75em 1.4em;
+      background: var(--rx-lime); color: #12263a;
+      border: 0; border-radius: 99px;
+      font: 800 1em "Plus Jakarta Sans", system-ui, sans-serif;
+      cursor: pointer;
+      box-shadow: 0 0 24px rgba(150, 212, 0, .45), 0 6px 14px rgba(20, 40, 60, .2);
+      transition: transform .15s, box-shadow .15s;
+    }
+    .btn-add:hover { transform: translateY(-2px); box-shadow: 0 0 32px rgba(150, 212, 0, .7), 0 10px 18px rgba(20, 40, 60, .25); }
+
+    .toast { min-height: 1.5em; margin: 0 0 10px; color: var(--ok-ink); font-weight: 800; }
+
+    .tablebox { background: var(--card); border: 1px solid var(--line); border-radius: 18px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 900px; }
+    th, td { padding: 14px 16px; text-align: left; vertical-align: middle; font-size: .92em; }
+    th { color: var(--sub); font-weight: 800; font-size: .8em; border-bottom: 2px solid var(--line); white-space: nowrap; }
+    td { border-bottom: 1px solid var(--line); }
+    tbody tr:last-child td { border-bottom: 0; }
+    td.strong { font-weight: 800; }
+    td.mask { letter-spacing: .12em; color: var(--sub); }
+    td.wrapcell { max-width: 260px; }
+    td.msg { text-align: center; color: var(--sub); padding: 36px 16px; }
+    td.msg button { margin-left: 8px; }
+    .pill { display: inline-block; padding: .25em .8em; border-radius: 99px; font-weight: 800; font-size: .85em; }
+    .pill.active { background: rgba(150, 212, 0, .2); color: var(--ok-ink); }
+    .pill.inactive { background: color-mix(in srgb, var(--sub) 20%, transparent); color: var(--sub); }
+    .btn-sm {
+      padding: .4em 1em; background: transparent; color: var(--ink);
+      border: 2px solid var(--line); border-radius: 99px;
+      font: 700 .9em "Plus Jakarta Sans", system-ui, sans-serif; cursor: pointer;
+    }
+    .btn-sm:hover { border-color: var(--rx-lime); background: color-mix(in srgb, var(--rx-lime) 22%, transparent); }
+
+    /* ---------- Add / edit dialog (same field style as login.html) ---------- */
+    .dlg {
+      width: min(660px, calc(100vw - 24px));
+      max-height: calc(100dvh - 24px);
+      margin: auto; padding: clamp(18px, 4vw, 32px);
+      overflow: auto;
+      background: var(--bg); color: var(--ink);
+      border: 0; border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .4);
+    }
+    .dlg::backdrop { background: rgba(13, 28, 43, .75); backdrop-filter: blur(3px); }
+    .dlg[open] { animation: pop .2s ease-out; }
+    @keyframes pop { from { transform: translateY(12px) scale(.98); opacity: 0; } to { transform: none; opacity: 1; } }
+    .dlg h2 { margin: 0 0 16px; font-size: clamp(24px, 4vw, 32px); letter-spacing: -.03em; font-weight: 800; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
+    .full { grid-column: 1 / -1; }
+    @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+    label { display: block; margin: 0 0 6px 4px; font-size: .8em; font-weight: 700; }
+    .field { position: relative; }
+    input, select {
+      width: 100%; height: 48px; padding: 0 16px;
+      background: var(--field); color: var(--ink);
+      border: 2px solid var(--line); border-radius: 14px;
+      font: inherit; font-size: max(16px, 1em);
+    }
+    select { appearance: auto; }
+    input:focus, select:focus { outline: none; border-color: var(--rx-lime); box-shadow: 0 0 0 3px rgba(150, 212, 0, .28); }
+    input:disabled { opacity: .65; cursor: not-allowed; }
+    .field.has-btn input { padding-right: 76px; }
+    .show {
+      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      padding: 6px 12px; background: transparent; color: var(--ink);
+      border: 0; border-radius: 99px;
+      font: 700 .8em "Plus Jakarta Sans", system-ui, sans-serif; cursor: pointer;
+    }
+    .show:hover { background: color-mix(in srgb, var(--rx-blue) 22%, transparent); }
+    .rules { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 8px 0 0 4px; padding: 0; list-style: none; font-size: .78em; font-weight: 700; color: var(--sub); }
+    .rules li::before { content: "\25CB\00a0"; }
+    .rules li.ok { color: var(--ok-ink); }
+    .rules li.ok::before { content: "\2713\00a0"; }
+    .hint { margin: 6px 0 0 4px; font-size: .78em; color: var(--sub); }
+    .err { min-height: 1.2em; margin: 14px 0 0; color: #e5484d; font-size: .88em; font-weight: 700; text-align: center; }
+    .actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px; flex-wrap: wrap; }
+    .btn-cancel {
+      height: 50px; padding: 0 24px; background: transparent; color: var(--ink);
+      border: 2px solid var(--line); border-radius: 99px;
+      font: 800 1em "Plus Jakarta Sans", system-ui, sans-serif; cursor: pointer;
+    }
+    .btn-save {
+      height: 50px; padding: 0 30px; background: var(--rx-lime); color: #12263a;
+      border: 0; border-radius: 99px;
+      font: 800 1em "Plus Jakarta Sans", system-ui, sans-serif; cursor: pointer;
+      box-shadow: 0 0 24px rgba(150, 212, 0, .45);
+    }
+    .btn-save:disabled { opacity: .6; cursor: wait; }
+    [hidden] { display: none !important; }
+    @media (prefers-reduced-motion: reduce) { .dlg[open], .btn-add { animation: none; transition: none; } }
+
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    :is(a, button):focus-visible { outline: 3px solid #ffb703; outline-offset: 3px; }
+  </style>
+</head>
+<body>
+
+  <header class="nav" id="top">
+    <div class="user">
+      <span class="avatar" id="avatar" aria-hidden="true">R</span>
+      <div class="who">
+        <span class="who-name" id="userName">Loading&hellip;</span>
+        <span class="who-id" id="accountId">&nbsp;</span>
+      </div>
+    </div>
+    <span class="trial is-loading" id="trial" role="status" aria-live="polite">Trial: -- days left</span>
+    <div class="nav-actions">
+      <button class="theme" id="themeBtn" type="button" aria-label="Switch to dark theme">
+        <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 13.5A9 9 0 1 1 10.5 3a7 7 0 0 0 10.5 10.5Z"/></svg>
+        <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <a class="logout" href="landing.html">Workspace</a>
+      <a class="logout" id="logoutBtn" href="login.html">Log out</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <h1>User management</h1>
+          <p id="count">Users in this account.</p>
+        </div>
+        <button class="btn-add" id="addBtn" type="button">Add user</button>
+      </div>
+
+      <p class="toast" id="toast" role="status" aria-live="polite"></p>
+
+      <div class="tablebox">
+        <table>
+          <thead>
+            <tr>
+              <th>User ID</th><th>Nickname</th><th>Username</th><th>Password</th><th>Role</th>
+              <th>Access Code</th><th>Modules</th><th>Fields</th><th>Status</th><th><span class="sr">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody id="rows"><tr><td class="msg" colspan="10">Loading users&hellip;</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <dialog class="dlg" id="dlg" aria-labelledby="dlgTitle">
+    <h2 id="dlgTitle">Add user</h2>
+    <form id="userForm" novalidate autocomplete="off">
+      <div class="grid">
+        <div>
+          <label for="fAccount">Account ID</label>
+          <input id="fAccount" type="text" disabled>
+        </div>
+        <div>
+          <label for="fUserId">User ID</label>
+          <input id="fUserId" type="text" disabled>
+        </div>
+
+        <div>
+          <label for="fNick">Nickname</label>
+          <input id="fNick" type="text" required>
+        </div>
+        <div>
+          <label for="fUser">Username</label>
+          <input id="fUser" type="text" autocapitalize="none" spellcheck="false" required>
+        </div>
+
+        <div class="full">
+          <label for="fPass">Password</label>
+          <div class="field has-btn">
+            <input id="fPass" type="password" autocomplete="new-password" required>
+            <button class="show" type="button" data-for="fPass" aria-pressed="false">Show</button>
+          </div>
+          <ul class="rules" id="passRules" aria-label="Password rules"></ul>
+          <p class="hint" id="passHint" hidden>Leave blank to keep the current password.</p>
+        </div>
+
+        <div>
+          <label for="fRole">Role</label>
+          <select id="fRole" required><option value="">Loading&hellip;</option></select>
+        </div>
+        <div>
+          <label for="fStatus">Status</label>
+          <select id="fStatus">
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
+
+        <div class="full" id="codeWrap" hidden>
+          <label for="fCode">Access Code</label>
+          <div class="field has-btn">
+            <input id="fCode" type="password" autocomplete="new-password">
+            <button class="show" type="button" data-for="fCode" aria-pressed="false">Show</button>
+          </div>
+          <ul class="rules" id="codeRules" aria-label="Access code rules"></ul>
+          <p class="hint" id="codeHint" hidden>Leave blank to keep the current access code.</p>
+        </div>
+
+        <div>
+          <label for="fModules">Modules</label>
+          <input id="fModules" type="text" disabled>
+        </div>
+        <div>
+          <label for="fFields">Fields</label>
+          <input id="fFields" type="text" disabled>
+        </div>
+      </div>
+
+      <p class="err" id="formErr" role="alert" aria-live="polite"></p>
+      <div class="actions">
+        <button class="btn-cancel" id="cancelBtn" type="button">Cancel</button>
+        <button class="btn-save" id="saveBtn" type="submit">Save user</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    (function () {
+      // ---- settings --------------------------------------------------------
+      // RaXa Database API (Apps Script web app)
+      var API = "https://script.google.com/macros/s/AKfycbxKI9W4narvcHMqxpW1nM8sSsLmcIGCywGV5-8iYpgi15cAW9SVXp7UEr7bWwWgieT10w/exec";
+      var API_KEY = "";          // only if you set API_KEY in the script's properties
+      var TRIAL_DAYS = 52;
+      // ---------------------------------------------------------------------
+
+      var elName  = document.getElementById("userName"),
+          elId    = document.getElementById("accountId"),
+          elAv    = document.getElementById("avatar"),
+          elTrial = document.getElementById("trial");
+
+      // Light / dark toggle: switches the page theme and the module stylesheet together
+      var themeBtn = document.getElementById("themeBtn");
+      function applyTheme(t) {
+        document.documentElement.dataset.theme = t;
+        themeBtn.setAttribute("aria-label", t === "dark" ? "Switch to light theme" : "Switch to dark theme");
+        try { localStorage.setItem("raxa-theme", t); } catch (e) {}
+      }
+      applyTheme(document.documentElement.dataset.theme);
+      themeBtn.addEventListener("click", function () {
+        applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+      });
+
+      // Log out: forget the saved account, then go back to the sign-in page
+      document.getElementById("logoutBtn").addEventListener("click", function (e) {
+        e.preventDefault();
+        try {
+          ["raxa-account-id", "raxa-user-name"].forEach(function (k) { sessionStorage.removeItem(k); localStorage.removeItem(k); });
+        } catch (x) {}
+        location.replace(this.getAttribute("href"));
+      });
+
+      function store(k) { try { return sessionStorage.getItem(k) || localStorage.getItem(k) || ""; } catch (e) { return ""; } }
+
+      // Account ID: ?id=... in the URL, else the one saved at sign-in
+      function getAccountId() {
+        var p = new URLSearchParams(location.search);
+        var id = p.get("id") || p.get("account") || p.get("c_id");
+        try {
+          if (id) { sessionStorage.setItem("raxa-account-id", id); localStorage.setItem("raxa-account-id", id); }
+        } catch (e) {}
+        return String(id || store("raxa-account-id")).trim();
+      }
+
+      function norm(s) { return String(s).toLowerCase().replace(/[^a-z0-9]/g, ""); }
+      function pick(row, names) {
+        for (var n = 0; n < names.length; n++)
+          for (var k in row)
+            if (norm(k) === names[n] && row[k] !== "" && row[k] != null) return String(row[k]).trim();
+        return "";
+      }
+      // sign-up date column of the Clients row (loose match, then any column with "date" in its name)
+      function pickDate(row) {
+        var v = pick(row, ["signupdate", "dateregistered", "registrationdate", "datecreated", "createdat", "startdate", "trialstart", "date"]);
+        if (v) return v;
+        for (var k in row) if (/date/i.test(k) && row[k]) return row[k];
+        return "";
+      }
+
+      // Sheet dates arrive as "2026-08-20T16:00:00.000Z" (UTC) or plain "2026-08-20" -> local midnight of that day
+      function parseDay(v) {
+        var s = String(v), d;
+        var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+        d = m ? new Date(+m[1], +m[2] - 1, +m[3]) : new Date(s);
+        return isNaN(d) ? null : new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      }
+
+      function daysLeft(signup) {
+        var t = new Date(); t = new Date(t.getFullYear(), t.getMonth(), t.getDate());
+        var used = Math.round((t - signup) / 86400000);
+        return Math.max(0, TRIAL_DAYS - Math.max(0, used));
+      }
+
+      function showTrial(n) {
+        elTrial.classList.remove("is-loading");
+        elTrial.classList.toggle("is-ended", n === 0);
+        elTrial.textContent = "Trial: " + (n < 10 ? "0" : "") + n + " days left";
+      }
+
+      function showUser(name, id) {
+        elName.textContent = name;
+        elId.textContent = id ? "Account ID: " + id : "";
+        elAv.textContent = (name.trim().charAt(0) || "R").toUpperCase();
+      }
+
+      function fail(msg) {
+        showUser(msg, "");
+        elId.innerHTML = '<a href="login.html">Sign in</a>';
+        elTrial.classList.remove("is-loading");
+        elTrial.textContent = "Trial: -- days left";
+      }
+
+      var id = getAccountId();
+      if (!id) { fail("No account found"); return; }
+      showUser(store("raxa-user-name") || "Loading\u2026", id);
+
+      // GET ?table=Clients&Account ID=<id>
+      var url = API + "?table=Clients&limit=1&" + encodeURIComponent("Account ID") + "=" + encodeURIComponent(id);
+      if (API_KEY) url += "&key=" + encodeURIComponent(API_KEY);
+
+      fetch(url)
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (!res || !res.ok) throw new Error((res && res.error) || "request failed");
+          var c = res.data && res.data[0];
+          if (!c) throw new Error("no client with Account ID " + id);
+          var name = store("raxa-user-name") || pick(c, ["name", "fullname", "clientname", "companyname", "company", "username"]) || "Account " + id;
+          showUser(name, id);
+          var d = parseDay(pickDate(c));
+          if (!d) throw new Error("no sign-up date found in the Clients row");
+          showTrial(daysLeft(d));
+        })
+        .catch(function (ex) { console.warn("RaXa landing:", ex); fail("Account not found"); });
+    })();
+  </script>
+
+  <script>
+    // User management: reads and writes the [Users] table through the RaXa Database API
+    (function () {
+      // ---- settings --------------------------------------------------------
+      var API = "https://script.google.com/macros/s/AKfycbxKI9W4narvcHMqxpW1nM8sSsLmcIGCywGV5-8iYpgi15cAW9SVXp7UEr7bWwWgieT10w/exec";
+      var API_KEY = "";          // only if you set API_KEY in the script's properties
+      var ADMIN_ROLE = "Admin";  // the Role that needs an Access Code
+      // ---------------------------------------------------------------------
+
+      function $(id) { return document.getElementById(id); }
+      function store(k) { try { return sessionStorage.getItem(k) || localStorage.getItem(k) || ""; } catch (e) { return ""; } }
+      function norm(s) { return String(s).toLowerCase().replace(/[^a-z0-9]/g, ""); }
+      function get(row, name) {
+        var n = norm(name);
+        for (var k in row) if (norm(k) === n) return row[k] == null ? "" : String(row[k]).trim();
+        return "";
+      }
+      function isAdmin(role) { return String(role).toLowerCase() === ADMIN_ROLE.toLowerCase(); }
+
+      var ACCOUNT = store("raxa-account-id");
+      var users = [], roles = [], editing = null;
+
+      // ---- API ---------------------------------------------------------------
+      function read(params) {
+        var q = Object.keys(params).map(function (k) { return encodeURIComponent(k) + "=" + encodeURIComponent(params[k]); }).join("&");
+        if (API_KEY) q += "&key=" + encodeURIComponent(API_KEY);
+        return fetch(API + "?" + q).then(function (r) { return r.json(); }).then(function (res) {
+          if (!res || !res.ok) throw new Error((res && res.error) || "Request failed.");
+          return res.data || [];
+        });
+      }
+      function write(payload) {
+        if (API_KEY) payload.key = API_KEY;
+        // text/plain keeps this a simple request (Apps Script web apps do not answer CORS preflights)
+        return fetch(API, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) })
+          .then(function (r) { return r.json(); }).then(function (res) {
+            if (!res || !res.ok) throw new Error((res && res.error) || "Request failed.");
+            return res;
+          });
+      }
+      function niceError(ex) {
+        return (ex && (ex.name === "TypeError" || ex.name === "SyntaxError")) ? "Can't reach the server. Try again." : ex.message;
+      }
+
+      // ---- table -------------------------------------------------------------
+      var rowsEl = $("rows");
+      function cell(text, cls) { var td = document.createElement("td"); if (cls) td.className = cls; td.textContent = text; return td; }
+      function messageRow(text, retry) {
+        rowsEl.innerHTML = "";
+        var tr = document.createElement("tr"), td = cell(text, "msg");
+        td.colSpan = 10;
+        if (retry) {
+          var b = document.createElement("button"); b.type = "button"; b.className = "btn-sm"; b.textContent = "Retry";
+          b.addEventListener("click", loadUsers); td.appendChild(b);
+        }
+        tr.appendChild(td); rowsEl.appendChild(tr);
+      }
+      function render() {
+        $("count").textContent = users.length === 1 ? "1 user in this account." : users.length + " users in this account.";
+        if (!users.length) { messageRow("No users yet. Add the first user for this account."); return; }
+        rowsEl.innerHTML = "";
+        users.forEach(function (u) {
+          var tr = document.createElement("tr");
+          var role = get(u, "Role"), status = get(u, "Status") || "Active";
+          tr.appendChild(cell(get(u, "User ID")));
+          tr.appendChild(cell(get(u, "Nickname"), "strong"));
+          tr.appendChild(cell(get(u, "Username")));
+          tr.appendChild(cell("\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022", "mask"));
+          tr.appendChild(cell(role));
+          tr.appendChild(isAdmin(role) ? cell("\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022", "mask") : cell("\u2014", "mask"));
+          tr.appendChild(cell(get(u, "Modules") || "\u2014", "wrapcell"));
+          tr.appendChild(cell(get(u, "Fields") || "\u2014", "wrapcell"));
+          var ts = document.createElement("td"), pill = document.createElement("span");
+          pill.className = "pill " + (status.toLowerCase() === "inactive" ? "inactive" : "active");
+          pill.textContent = status; ts.appendChild(pill); tr.appendChild(ts);
+          var ta = document.createElement("td"), b = document.createElement("button");
+          b.type = "button"; b.className = "btn-sm"; b.textContent = "Edit";
+          b.setAttribute("aria-label", "Edit " + (get(u, "Nickname") || get(u, "Username")));
+          b.addEventListener("click", function () { openForm(u); });
+          ta.appendChild(b); tr.appendChild(ta);
+          rowsEl.appendChild(tr);
+        });
+      }
+      function loadUsers() {
+        if (!ACCOUNT) { messageRow("No account found. Sign in again."); return; }
+        messageRow("Loading users\u2026");
+        read({ table: "Users", "Account ID": ACCOUNT })
+          .then(function (rows) { users = rows; render(); })
+          .catch(function (ex) { messageRow("Could not load users: " + niceError(ex), true); });
+      }
+
+      // roles = every value in column "Role" of table [enum]
+      function loadRoles() {
+        return read({ table: "enum" }).then(function (rows) {
+          var seen = {}; roles = [];
+          rows.forEach(function (r) {
+            var v = get(r, "Role");
+            if (v && !seen[v.toLowerCase()]) { seen[v.toLowerCase()] = 1; roles.push(v); }
+          });
+        }).catch(function () { roles = []; });
+      }
+      function fillRoles(current) {
+        var sel = $("fRole"); sel.innerHTML = "";
+        if (!roles.length) { sel.innerHTML = '<option value="">Roles not found</option>'; return; }
+        var ph = document.createElement("option"); ph.value = ""; ph.textContent = "Select a role"; sel.appendChild(ph);
+        roles.forEach(function (r) { var o = document.createElement("option"); o.value = r; o.textContent = r; sel.appendChild(o); });
+        sel.value = current || "";
+      }
+
+      // ---- password / access code rules ---------------------------------------
+      // no spaces, 1 special character, 1 uppercase letter, 1 number, at least 8 characters
+      function checks(v) {
+        return [
+          { ok: v.length >= 8, text: "8+ characters" },
+          { ok: /[A-Z]/.test(v), text: "1 uppercase" },
+          { ok: /\d/.test(v), text: "1 number" },
+          { ok: /[^A-Za-z0-9\s]/.test(v), text: "1 special character" },
+          { ok: v.length > 0 && !/\s/.test(v), text: "No spaces" }
+        ];
+      }
+      function strong(v) { return checks(v).every(function (c) { return c.ok; }); }
+      function drawRules(inputId, listId) {
+        var list = $(listId); list.innerHTML = "";
+        checks($(inputId).value).forEach(function (c) {
+          var li = document.createElement("li"); if (c.ok) li.className = "ok"; li.textContent = c.text; list.appendChild(li);
+        });
+      }
+      $("fPass").addEventListener("input", function () { drawRules("fPass", "passRules"); });
+      $("fCode").addEventListener("input", function () { drawRules("fCode", "codeRules"); });
+      Array.prototype.forEach.call(document.querySelectorAll(".show"), function (b) {
+        b.addEventListener("click", function () {
+          var inp = $(b.getAttribute("data-for")), hide = inp.type === "password";
+          inp.type = hide ? "text" : "password"; b.textContent = hide ? "Hide" : "Show"; b.setAttribute("aria-pressed", hide);
+        });
+      });
+
+      // Access Code only shows when Role = Admin
+      function syncCode() {
+        var show = isAdmin($("fRole").value);
+        $("codeWrap").hidden = !show;
+        $("codeHint").hidden = !(show && editing && isAdmin(get(editing, "Role")));
+        if (!show) $("fCode").value = "";
+        drawRules("fCode", "codeRules");
+      }
+      $("fRole").addEventListener("change", syncCode);
+
+      // ---- dialog ------------------------------------------------------------
+      var dlg = $("dlg"), err = $("formErr"), saveBtn = $("saveBtn");
+      function newUserId() { return "U-" + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 4).toUpperCase(); }
+
+      function openForm(u) {
+        editing = u || null;
+        $("dlgTitle").textContent = u ? "Edit user" : "Add user";
+        $("fAccount").value = ACCOUNT;
+        $("fUserId").value = u ? get(u, "User ID") : "";
+        $("fUserId").placeholder = "Auto generated";
+        $("fNick").value = u ? get(u, "Nickname") : "";
+        $("fUser").value = u ? get(u, "Username") : "";
+        $("fPass").value = ""; $("fCode").value = "";
+        $("fPass").type = "password"; $("fCode").type = "password";
+        Array.prototype.forEach.call(document.querySelectorAll(".show"), function (b) { b.textContent = "Show"; b.setAttribute("aria-pressed", "false"); });
+        $("fStatus").value = u ? (get(u, "Status") || "Active") : "Active";
+        $("fModules").value = u ? get(u, "Modules") : ""; $("fModules").placeholder = "Calculated";
+        $("fFields").value = u ? get(u, "Fields") : "";   $("fFields").placeholder = "Calculated";
+        $("passHint").hidden = !u;
+        fillRoles(u ? get(u, "Role") : "");
+        drawRules("fPass", "passRules");
+        syncCode();
+        err.textContent = ""; saveBtn.disabled = false; saveBtn.textContent = "Save user";
+        dlg.showModal();
+        $("fNick").focus();
+      }
+      function closeForm() { dlg.close(); }
+      $("addBtn").addEventListener("click", function () { openForm(null); });
+      $("cancelBtn").addEventListener("click", closeForm);
+      dlg.addEventListener("mousedown", function (e) {
+        var r = dlg.getBoundingClientRect();
+        if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) closeForm();
+      });
+
+      function usernameFree(name) {
+        var lower = name.toLowerCase();
+        var mine = editing ? get(editing, "User ID") : "";
+        var local = users.some(function (u) { return get(u, "Username").toLowerCase() === lower && get(u, "User ID") !== mine; });
+        if (local) return Promise.resolve(false);
+        return Promise.all([read({ table: "Users", Username: name }), read({ table: "Clients", Username: name })])
+          .then(function (r) { return r[0].length === 0 && r[1].length === 0; });
+      }
+
+      function toast(msg) {
+        var t = $("toast"); t.textContent = msg;
+        setTimeout(function () { if (t.textContent === msg) t.textContent = ""; }, 4000);
+      }
+      function stop(msg) { err.textContent = msg; saveBtn.disabled = false; saveBtn.textContent = "Save user"; }
+
+      $("userForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        err.textContent = "";
+        var nick = $("fNick").value.trim(), uname = $("fUser").value.trim(),
+            pass = $("fPass").value, role = $("fRole").value, code = $("fCode").value, status = $("fStatus").value,
+            admin = isAdmin(role),
+            wasAdmin = editing ? isAdmin(get(editing, "Role")) : false;
+
+        if (!nick) { stop("Nickname is required."); $("fNick").focus(); return; }
+        if (!uname) { stop("Username is required."); $("fUser").focus(); return; }
+        if (!editing && !pass) { stop("Password is required."); $("fPass").focus(); return; }
+        if (pass && !strong(pass)) { stop("Password needs 8+ characters, 1 uppercase, 1 number, 1 special character and no spaces."); $("fPass").focus(); return; }
+        if (!role) { stop(roles.length ? "Select a role." : "Roles could not be loaded. Reload the page."); $("fRole").focus(); return; }
+        if (admin && !code && !(editing && wasAdmin)) { stop("Access Code is required for Admin."); $("fCode").focus(); return; }
+        if (admin && code && !strong(code)) { stop("Access Code needs 8+ characters, 1 uppercase, 1 number, 1 special character and no spaces."); $("fCode").focus(); return; }
+
+        saveBtn.disabled = true; saveBtn.textContent = "Saving\u2026";
+        var changed = !editing || get(editing, "Username").toLowerCase() !== uname.toLowerCase();
+
+        (changed ? usernameFree(uname) : Promise.resolve(true)).then(function (free) {
+          if (!free) throw new Error("That username is already taken.");
+          if (!editing) {
+            // Modules and Fields are formulated in the sheet, so they are not sent
+            return write({ action: "create", table: "Users", data: {
+              "Account ID": ACCOUNT, "User ID": newUserId(), "Nickname": nick, "Username": uname,
+              "Password": pass, "Role": role, "Access Code": admin ? code : "", "Status": status
+            } });
+          }
+          var data = { "Nickname": nick, "Username": uname, "Role": role, "Status": status };
+          if (pass) data["Password"] = pass;
+          if (admin && code) data["Access Code"] = code;
+          if (!admin && wasAdmin) data["Access Code"] = "";
+          return write({ action: "update", table: "Users", where: { "User ID": get(editing, "User ID") }, data: data });
+        }).then(function () {
+          var added = !editing;
+          closeForm(); toast(added ? "User added." : "User updated."); loadUsers();
+        }).catch(function (ex) { stop(niceError(ex)); });
+      });
+
+      loadRoles();
+      loadUsers();
+    })();
+  </script>
+</body>
+</html>

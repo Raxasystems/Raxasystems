@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Sign in | RaXa Systems</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://script.google.com">
+  <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+  <link rel="prefetch" href="landing.html">
+
+  <!-- same theme choice as index.html (light / dark) -->
+  <script>
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem("raxa-theme"); } catch (e) {}
+      if (!t) t = (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+
+  <style>
+    :root {
+      --bg: #ffffff;
+      --ink: #12263a;
+      --sub: #4a5d70;
+      --field: #f1f6fc;
+      --line: #c5d3e2;
+      --blue: #2f72bf;
+      --lime: #96d400;
+      --tag-bg: #12263a;
+      --tag-ink: #ffffff;
+    }
+    :root[data-theme="dark"] {
+      --bg: #12263a;
+      --ink: #eef1f7;
+      --sub: #9fb2c6;
+      --field: #0d1c2b;
+      --line: #2c4a68;
+      --blue: #3d86d6;
+      --tag-bg: #ffffff;
+      --tag-ink: #12263a;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: max(24px, env(safe-area-inset-top)) clamp(16px, 5vw, 48px) max(24px, env(safe-area-inset-bottom));
+      background: var(--bg);
+      color: var(--ink);
+      font: 500 clamp(15px, 1.2vw + 12px, 18px)/1.4 "Plus Jakarta Sans", system-ui, sans-serif;
+    }
+
+    /* the page itself: no card, border, shadow or padding box */
+    .page { width: min(100%, 440px); }
+
+    .back {
+      display: inline-block;
+      margin: 0 0 clamp(16px, 3vw, 28px);
+      color: var(--sub);
+      font-size: .85em;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .back:hover { color: var(--ink); }
+
+    h1 { margin: 0; }
+    .hi {
+      display: block;
+      font-size: clamp(60px, 17vw, 108px);
+      line-height: .95;
+      letter-spacing: -.04em;
+      font-weight: 800;
+    }
+    .welcome {
+      display: block;
+      margin-top: 4px;
+      font-size: clamp(32px, 8.5vw, 50px);
+      line-height: 1;
+      letter-spacing: -.03em;
+      font-weight: 800;
+    }
+
+    .tag {
+      display: inline-block;
+      margin: clamp(14px, 3vw, 22px) 0 0 2px;
+      padding: .55em .9em;
+      background: var(--tag-bg);
+      color: var(--tag-ink);
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: clamp(15px, 3.6vw, 20px);
+      line-height: 1.2;
+      transform: rotate(-3deg);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, .22);
+    }
+
+    /* ---------- form ---------- */
+    form { display: grid; gap: clamp(12px, 2.4vw, 16px); margin-top: clamp(18px, 4vw, 28px); }
+    label {
+      display: block;
+      margin: 0 0 6px 4px;
+      font-size: .8em;
+      font-weight: 700;
+    }
+    .field { position: relative; }
+    input {
+      width: 100%;
+      height: clamp(46px, 7vw, 54px);
+      padding: 0 16px;
+      background: var(--field);
+      color: var(--ink);
+      border: 2px solid var(--line);
+      border-radius: 14px;
+      font: inherit;
+      font-size: max(16px, 1em); /* 16px+ stops iOS zooming on focus */
+    }
+    input:focus { outline: none; border-color: var(--lime); box-shadow: 0 0 0 3px rgba(150, 212, 0, .28); }
+    .field.has-btn input { padding-right: 76px; }
+
+    .show {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 6px 12px;
+      background: transparent;
+      color: var(--ink);
+      border: 0;
+      border-radius: 99px;
+      font: 700 .8em inherit;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .show:hover { background: color-mix(in srgb, var(--blue) 22%, transparent); }
+
+    .error { min-height: 1.2em; margin: 0; color: #e5484d; font-size: .85em; font-weight: 700; text-align: center; }
+
+    .signin {
+      height: clamp(48px, 7.5vw, 58px);
+      background: #ffffff;
+      color: #12263a;
+      border: 2px solid var(--line);
+      border-radius: 99px;
+      font: 800 1.1em "Plus Jakarta Sans", system-ui, sans-serif;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(20, 40, 60, .25);
+      transition: transform .15s, box-shadow .15s;
+    }
+    .signin:hover { transform: translateY(-2px); box-shadow: 0 12px 22px rgba(20, 40, 60, .3); }
+    .signin:active { transform: translateY(0); }
+
+    /* Sign up = the green glowing button */
+    .signup {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: clamp(48px, 7.5vw, 58px);
+      background: var(--lime);
+      color: #12263a;
+      border: 0;
+      border-radius: 99px;
+      font: 800 1.1em "Plus Jakarta Sans", system-ui, sans-serif;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 0 28px rgba(150, 212, 0, .5), 0 8px 18px rgba(20, 40, 60, .25);
+      transition: transform .15s, box-shadow .15s;
+    }
+    .signup:hover { transform: translateY(-2px); box-shadow: 0 0 36px rgba(150, 212, 0, .75), 0 12px 22px rgba(20, 40, 60, .3); }
+    .signup:active { transform: translateY(0); }
+
+    .forgot { justify-self: center; color: var(--ink); font-size: .85em; font-weight: 700; }
+
+    :is(a, button):focus-visible { outline: 3px solid #ffb703; outline-offset: 3px; }
+
+    /* short screens (phones in landscape, small laptops): tighten the header */
+    @media (max-height: 640px) {
+      .hi { font-size: 56px; }
+      .welcome { font-size: 30px; }
+      .tag { margin-top: 10px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .signin, .signup { transition: none; }
+    }
+
+    /* ---------- full-screen loading overlay (shown while signing in) ---------- */
+    .loading {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    .loading.on { display: flex; }
+    .loading .mark { position: relative; width: clamp(96px, 26vw, 140px); aspect-ratio: 1; display: grid; place-items: center; }
+    .loading .mark img { width: 62%; height: 62%; object-fit: contain; animation: rx-pulse 1.6s ease-in-out infinite; }
+    .loading .ring {
+      position: absolute; inset: 0;
+      border: 4px solid var(--line);
+      border-top-color: var(--lime);
+      border-radius: 50%;
+      animation: rx-spin 1s linear infinite;
+    }
+    .loading p { margin: 0; font-weight: 700; font-size: .95em; color: var(--sub); }
+    @keyframes rx-spin  { to { transform: rotate(360deg); } }
+    @keyframes rx-pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(.9); opacity: .8; } }
+    @media (prefers-reduced-motion: reduce) {
+      .loading .mark img { animation: none; }
+      .loading .ring { animation-duration: 2.4s; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <main class="page">
+    <a class="back" href="index.html" id="backLink">&larr; Back to home</a>
+
+    <h1 id="title">
+      <span class="hi">Hi!</span>
+      <span class="welcome">Welcome back</span>
+    </h1>
+    <p class="tag">Sign in to your RaXa workspace.</p>
+
+    <!-- Sign-in is handled by the script below (RaXa Database API, login action) -->
+    <form id="loginForm" novalidate>
+      <div>
+        <label for="username">Username</label>
+        <div class="field">
+          <input id="username" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+        </div>
+      </div>
+
+      <div>
+        <label for="password">Password</label>
+        <div class="field has-btn">
+          <input id="password" name="password" type="password" autocomplete="current-password" required>
+          <button class="show" id="showBtn" type="button" aria-controls="password" aria-pressed="false">Show</button>
+        </div>
+      </div>
+
+      <p class="error" id="error" role="alert" aria-live="polite"></p>
+
+      <button class="signin" type="submit">Sign in</button>
+      <a class="signup" href="#sign-up">Sign up</a>
+      <a class="forgot" href="#forgot-password">Forgot password?</a>
+    </form>
+  </main>
+
+  <div class="loading" id="loading" role="status" aria-live="polite" aria-label="Signing in">
+    <div class="mark">
+      <span class="ring" aria-hidden="true"></span>
+      <img src="assets/logo.png" alt="RaXa" onerror="this.style.display='none'">
+    </div>
+    <p>Signing you in&hellip;</p>
+  </div>
+
+  <script>
+    (function () {
+      var form = document.getElementById("loginForm"),
+          user = document.getElementById("username"),
+          pass = document.getElementById("password"),
+          show = document.getElementById("showBtn"),
+          err  = document.getElementById("error");
+
+      user.focus();
+
+      // show / hide password
+      show.addEventListener("click", function () {
+        var hidden = pass.type === "password";
+        pass.type = hidden ? "text" : "password";
+        show.textContent = hidden ? "Hide" : "Show";
+        show.setAttribute("aria-pressed", hidden);
+      });
+
+      // ---- settings --------------------------------------------------------
+      var API = "https://script.google.com/macros/s/AKfycbxKI9W4narvcHMqxpW1nM8sSsLmcIGCywGV5-8iYpgi15cAW9SVXp7UEr7bWwWgieT10w/exec";
+      var LANDING = "landing.html";     // page opened after a successful sign-in
+      // ---------------------------------------------------------------------
+
+      var btn = form.querySelector(".signin"), overlay = document.getElementById("loading");
+      function busy(on) { overlay.classList.toggle("on", on); document.body.style.overflow = on ? "hidden" : ""; }
+
+      // Warm up Apps Script while the person types, so the real sign-in skips the cold start
+      try { fetch(API + "?ping=1", { mode: "no-cors", cache: "no-store" }).catch(function () {}); } catch (x) {}
+
+      function norm(s) { return String(s).toLowerCase().replace(/[^a-z0-9]/g, ""); }
+      // first non-empty value whose column name matches one of `names` (in priority order)
+      function pick(row, names) {
+        for (var n = 0; n < names.length; n++) {
+          for (var k in row) {
+            if (norm(k) === names[n] && row[k] !== "" && row[k] != null) return String(row[k]).trim();
+          }
+        }
+        return "";
+      }
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (!user.value.trim() || !pass.value) {
+          err.textContent = "Enter your username and password.";
+          (user.value.trim() ? pass : user).focus();
+          return;
+        }
+        err.textContent = "";
+        btn.disabled = true;
+        btn.textContent = "Signing in\u2026";
+        busy(true);
+
+        var payload = { action: "login", username: user.value.trim(), password: pass.value };
+
+        // text/plain keeps this a simple request (Apps Script web apps do not answer CORS preflights)
+        fetch(API, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        })
+          .then(function (r) { return r.json(); })
+          .then(function (res) {
+            if (!res || !res.ok) throw new Error((res && res.error) || "Sign-in failed.");
+            if (!res.token) throw new Error("Sign-in failed.");
+            var u = res.user || {};
+            var id = pick(u, ["accountid", "cid"]);
+            if (!id) throw new Error("This account has no Account ID.");
+            var name = pick(u, ["nickname", "name", "fullname", "accountname", "clientname", "companyname", "company", "username"]) || user.value.trim();
+            try {
+              sessionStorage.setItem("raxa-account-id", id);   localStorage.setItem("raxa-account-id", id);
+              sessionStorage.setItem("raxa-user-name", name);  localStorage.setItem("raxa-user-name", name);
+              // session token issued by the server (expires after 6 h); the password is never sent back
+              sessionStorage.setItem("raxa-token", res.token); localStorage.setItem("raxa-token", res.token);
+            } catch (x) {}
+            // verified live against the Users table -> open the landing page right away
+            pass.value = "";
+            var url = LANDING;    // no account id in the URL: the server knows who you are from the token
+            try { window.top.location.href = url; } catch (x) { window.location.href = url; }
+          })
+          .catch(function (ex) {
+            err.textContent = (ex && (ex.name === "TypeError" || ex.name === "SyntaxError"))
+              ? "Can't reach the server. Try again."
+              : ex.message;
+            busy(false);
+            btn.disabled = false;
+            btn.textContent = "Sign in";
+            pass.focus();
+          });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RaXa Systems</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="apple-touch-icon" href="assets/logo.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/button1green.css">
+  <link rel="stylesheet" href="assets/module1light.css" id="moduleCss">
+
+  <style>
+    :root {
+      --bg: #ffffff;
+      --sec: #f1f6fc;
+      --ink: #12263a;
+      --sub: #4a5d70;
+      --rx-blue: #2f72bf;
+      --rx-ico: #1f64ad;
+      --rx-lime: #95d600;
+      --rx-tile-bg: #ffffff;
+      --rx-tile-text: #12263a;
+      --rx-cloud-1: #ffffff;
+      --rx-cloud-2: #eaf2fb;
+      --rx-chart-line: #12263a;
+      --rx-chart-grid: #d7e0e9;
+      --rx-chart-muted: #5b6b7b;
+      --rx-chart-bg: #f1f6fc;
+      --rx-chart-text: #12263a;
+      --rx-chart-registered: #6fbf00;
+      --rx-chart-total: #7d8b9a;
+      --rx-chart-unregistered: #ff8a1f;
+    }
+    :root[data-theme="dark"] {
+      --bg: #0b1826;
+      --sec: #0f2031;
+      --ink: #eef1f7;
+      --sub: #9fb2c6;
+      --rx-blue: #3d86d6;
+      --rx-ico: #7db8f0;
+      --rx-tile-bg: #14293e;
+      --rx-tile-text: #eef1f7;
+      --rx-cloud-1: #1a3652;
+      --rx-cloud-2: #11263a;
+      --rx-chart-line: #eef1f7;
+      --rx-chart-grid: #24405a;
+      --rx-chart-muted: #9fb2c6;
+      --rx-chart-bg: #0f2031;
+      --rx-chart-text: #eef1f7;
+      --rx-chart-registered: #95d600;
+      --rx-chart-total: #b8c4d0;
+      --rx-chart-unregistered: #ff9b3d;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font: 500 clamp(16px, .4vw + 14px, 18px)/1.5 "Plus Jakarta Sans", system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+    /* ---------- Top nav (deep blue = Welcome text colour, hover = Explore Workspace green) ---------- */
+    .nav {
+      --nav-bg: #12263a;
+      position: sticky; top: 0; z-index: 500;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 0 clamp(16px, 5vw, 64px);
+      min-height: 64px;
+      background: var(--nav-bg);
+      box-shadow: 0 2px 14px rgba(8, 18, 30, .25);
+    }
+    :root[data-theme="dark"] .nav { border-bottom: 1px solid #24405a; }
+    .nav-links {
+      display: flex; align-items: center; gap: 4px;
+      list-style: none; margin: 0; padding: 0;
+    }
+    .nav-links a, .nav-signin, .nav-meet {
+      display: inline-block;
+      font: 700 clamp(13px, .3vw + 12px, 15px) "Plus Jakarta Sans", system-ui, sans-serif;
+      color: #eef1f7;
+      text-decoration: none;
+      padding: .6em clamp(10px, 1.2vw, 16px);
+      border-radius: 99px;
+      transition: background .15s, color .15s;
+      white-space: nowrap;
+    }
+    .nav-links a:hover, .nav-links a:focus-visible,
+    .nav-signin:hover, .nav-signin:focus-visible {
+      background: var(--rx-lime);
+      color: #12263a;
+    }
+    .nav-links a:focus-visible, .nav-signin:focus-visible { outline: 3px solid #ffb703; outline-offset: 2px; }
+    .nav-meet { background: var(--rx-lime); color: #12263a; font-weight: 800; padding: .5em clamp(12px, 1.4vw, 18px); border: 2px solid var(--rx-lime); }
+    .nav-meet:hover, .nav-meet:focus-visible { background: #b4ee1f; border-color: #b4ee1f; color: #12263a; outline: 3px solid #ffb703; outline-offset: 2px; }
+    .nav-meet:hover { outline: none; }
+    .nav-signin { border: 2px solid var(--rx-lime); padding: .5em clamp(12px, 1.4vw, 18px); cursor: pointer; }
+    .nav-actions { display: flex; align-items: center; gap: 12px; }
+
+    @media (max-width: 820px) {
+      .nav { flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
+      .nav-links { order: 3; width: 100%; overflow-x: auto; padding-bottom: 4px; }
+    }
+
+    /* ---------- Sign in pop up: shows the stand-alone login.html inside a dialog ---------- */
+    .login-dialog {
+      width: min(460px, calc(100vw - 24px));
+      height: min(780px, calc(100dvh - 24px));
+      margin: auto; padding: 0;
+      overflow: hidden;
+      background: var(--bg);
+      border: 0; border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .4);
+    }
+    .login-dialog::backdrop { background: rgba(13, 28, 43, .75); backdrop-filter: blur(3px); }
+    .login-dialog[open] { animation: loginPop .2s ease-out; }
+    @keyframes loginPop { from { transform: translateY(12px) scale(.98); opacity: 0; } to { transform: none; opacity: 1; } }
+    .login-frame { display: block; width: 100%; height: 100%; border: 0; background: var(--bg); }
+    .login-close {
+      position: absolute; top: 10px; right: 10px; z-index: 2;
+      width: 38px; height: 38px; border: 0; border-radius: 50%;
+      background: transparent; color: var(--sub);
+      font: 700 26px/1 "Plus Jakarta Sans", system-ui, sans-serif; cursor: pointer;
+    }
+    .login-close:hover { background: color-mix(in srgb, var(--rx-blue) 22%, transparent); color: var(--ink); }
+    .login-dialog :is(a, button):focus-visible { outline: 3px solid #ffb703; outline-offset: 3px; }
+    body.login-open { overflow: hidden; }
+    @media (prefers-reduced-motion: reduce) { .login-dialog[open] { animation: none; } }
+
+    .wrap { max-width: 1280px; margin: 0 auto; }
+
+    /* ---------- Hero: navy, text left / logo + button right ---------- */
+    .hero { background: #12263a; color: #eef1f7; overflow: hidden; }
+    .hero-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: grid; grid-template-columns: 1.15fr 1fr; align-items: center;
+      gap: clamp(24px, 5vw, 80px);
+      padding: clamp(32px, 6vw, 80px) clamp(16px, 7vw, 100px);
+    }
+    .hero-hi {
+      font-size: clamp(72px, 12vw, 170px);
+      font-weight: 800; line-height: .95; letter-spacing: -.04em;
+      margin: 0 0 clamp(8px, 2vw, 24px);
+    }
+    .hero h1 {
+      margin: 0 0 clamp(14px, 2vw, 24px);
+      font-size: clamp(40px, 6.4vw, 92px);
+      line-height: 1; letter-spacing: -.04em; font-weight: 800;
+      max-width: 7em;
+    }
+    .hero-bubble {
+      display: inline-block; margin: 0; max-width: 480px;
+      padding: .7em 1em;
+      background: #fff; color: #12263a;
+      font-size: clamp(18px, 2.2vw, 30px); font-weight: 800; line-height: 1.2; letter-spacing: -.02em;
+      border-radius: 18px;
+      transform: rotate(-2.5deg);
+      box-shadow: 0 8px 0 rgba(8, 18, 30, .35);
+    }
+    .hero-side { display: flex; flex-direction: column; align-items: center; gap: clamp(14px, 2vw, 28px); }
+    .hero-img { display: block; width: min(100%, 520px); height: auto; }
+    .hero-btn { transform: rotate(-2deg); }
+
+    @media (max-width: 820px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-side { align-items: center; }
+    }
+
+    .band {
+      background: var(--sec);
+      padding: clamp(40px, 6vw, 80px) clamp(16px, 5vw, 64px) clamp(48px, 7vw, 90px);
+    }
+    .band h2 {
+      margin: 0 auto 6px;
+      max-width: 1280px;
+      font-size: clamp(32px, 5vw, 56px);
+      letter-spacing: -.03em;
+      font-weight: 800;
+    }
+    .band > .wrap > p { margin: 0 0 28px; color: var(--sub); max-width: 760px; }
+
+    .users { border-top: 1px solid var(--rx-chart-grid); }
+    .users-chart { display: block; width: 100%; height: auto; }
+
+    /* Panda traits: always white, navy text, green titles/icons (same in light and dark theme) */
+    .traits { background: #ffffff; color: #12263a; padding: clamp(40px, 6vw, 80px) clamp(16px, 5vw, 64px) clamp(48px, 7vw, 90px); }
+    .traits h2 {
+      margin: 0 0 clamp(28px, 4vw, 48px); text-align: center; color: #12263a;
+      font-size: clamp(32px, 5vw, 56px); letter-spacing: -.03em; font-weight: 800; line-height: 1.1;
+    }
+    .trait-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(28px, 4vw, 48px) clamp(20px, 3vw, 40px); }
+    .trait { text-align: center; }
+    .trait-ico {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px; margin-bottom: 14px;
+      color: #5a8700; border: 2px solid var(--rx-lime); border-radius: 10px;
+    }
+    .trait-ico svg { width: 22px; height: 22px; }
+    .trait h3 { margin: 0 0 8px; font-size: clamp(17px, .5vw + 15px, 20px); font-weight: 800; color: #5a8700; }
+    .trait p { margin: 0 auto; max-width: 34ch; font-size: clamp(14px, .3vw + 13px, 16px); color: #12263a; }
+    @media (max-width: 900px) { .trait-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .trait-grid { grid-template-columns: 1fr; } }
+
+    footer {
+      padding: 28px 16px;
+      text-align: center;
+      color: var(--sub);
+      font-size: 15px;
+    }
+
+    /* ---------- Landing mockup (client selector, notice, landing.html nav + workspace) ---------- */
+    .lm-picker { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 0 0 16px; }
+    .lm-picker-label { font-weight: 800; color: var(--ink); }
+    .lm-seg {
+      display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px;
+      background: #12263a; border: 1px solid transparent; border-radius: 99px;
+    }
+    :root[data-theme="dark"] .lm-seg { border-color: #24405a; }
+    .lm-seg button {
+      padding: .5em clamp(14px, 1.6vw, 22px);
+      background: transparent; color: #eef1f7;
+      border: 2px solid transparent; border-radius: 99px;
+      font: 700 clamp(13px, .3vw + 12px, 15px) "Plus Jakarta Sans", system-ui, sans-serif;
+      white-space: nowrap; cursor: pointer;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .lm-seg button:hover { border-color: var(--rx-lime); }
+    .lm-seg button[aria-checked="true"] { background: var(--rx-lime); border-color: var(--rx-lime); color: #12263a; }
+
+    .lm-notice {
+      display: flex; align-items: flex-start; gap: 12px;
+      margin: 0 0 20px; padding: 12px 16px;
+      background: color-mix(in srgb, var(--rx-blue) 10%, var(--bg));
+      border: 1px solid color-mix(in srgb, var(--rx-blue) 30%, transparent);
+      border-left: 4px solid var(--rx-lime);
+      border-radius: 12px;
+      color: var(--ink);
+    }
+    .lm-notice svg { flex: none; width: 22px; height: 22px; margin-top: 1px; color: var(--rx-ico); }
+    .lm-notice p { margin: 0; max-width: none; color: var(--ink); font-size: clamp(14px, .3vw + 13px, 16px); line-height: 1.45; }
+
+    .lm {
+      --trial: #ff7a45; --trial-late: #ff4d4f;
+      background: var(--sec);
+      border: 1px solid color-mix(in srgb, var(--rx-blue) 35%, transparent);
+      border-radius: 20px;
+      box-shadow: 0 12px 36px rgba(8, 18, 30, .16);
+    }
+    .lm-nav {
+      display: flex; align-items: center; gap: clamp(10px, 2vw, 20px); flex-wrap: wrap;
+      min-height: 64px; padding: 8px clamp(14px, 3vw, 32px);
+      background: #12263a; border-radius: 19px 19px 0 0;
+    }
+    :root[data-theme="dark"] .lm-nav { border-bottom: 1px solid #24405a; }
+    .lm-user { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .lm-avatar {
+      flex: none; display: grid; place-items: center; width: 40px; height: 40px;
+      background: var(--rx-lime); color: #12263a; border-radius: 50%;
+      font-weight: 800; font-size: 15px; letter-spacing: -.02em;
+    }
+    .lm-who { min-width: 0; line-height: 1.2; }
+    .lm-who-name {
+      display: block; max-width: min(46vw, 320px);
+      color: #eef1f7; font-weight: 800; font-size: clamp(14px, .4vw + 13px, 16px);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .lm-who-id { display: block; color: #9fb2c6; font-weight: 700; font-size: 12.5px; }
+    .lm-trial {
+      display: inline-block; padding: .45em 1em;
+      color: var(--trial); border: 2px solid var(--trial); border-radius: 99px;
+      font: 800 clamp(13px, .3vw + 12px, 15px) "Plus Jakarta Sans", system-ui, sans-serif;
+      font-variant-numeric: tabular-nums; white-space: nowrap;
+    }
+    .lm-trial.is-ended { color: var(--trial-late); border-color: var(--trial-late); }
+    .lm-trial.is-loading { opacity: .6; }
+    .lm-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .lm-logout {
+      padding: .5em clamp(12px, 1.4vw, 18px);
+      background: transparent; color: #eef1f7;
+      border: 2px solid var(--rx-lime); border-radius: 99px;
+      font: 700 clamp(13px, .3vw + 12px, 15px) "Plus Jakarta Sans", system-ui, sans-serif;
+      text-decoration: none; white-space: nowrap; cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+    .lm-logout:hover, .lm-logout:focus-visible { background: var(--rx-lime); color: #12263a; }
+    .lm-theme {
+      display: grid; place-items: center; width: 40px; height: 40px; padding: 0;
+      background: transparent; color: #eef1f7;
+      border: 2px solid var(--rx-lime); border-radius: 50%; cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+    .lm-theme:hover, .lm-theme:focus-visible { background: var(--rx-lime); color: #12263a; }
+    .lm-theme svg { width: 20px; height: 20px; }
+    .lm-theme .i-sun { display: none; }
+    :root[data-theme="dark"] .lm-theme .i-sun { display: block; }
+    :root[data-theme="dark"] .lm-theme .i-moon { display: none; }
+
+    .lm-band { padding: clamp(24px, 4vw, 48px) clamp(14px, 3vw, 40px) clamp(24px, 4vw, 48px); }
+    .lm-band h2 { margin: 0 0 6px; max-width: none; font-size: clamp(32px, 5vw, 56px); letter-spacing: -.03em; font-weight: 800; }
+    .lm-band > p { margin: 0 0 28px; color: var(--sub); max-width: 760px; }
+
+    /* shows what changed when the client is switched */
+    .lm.is-switching .lm-user, .lm.is-switching .lm-trial { animation: lmSwap .22s ease-out; }
+    @keyframes lmSwap { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .lm.is-switching .lm-user, .lm.is-switching .lm-trial { animation: none; } }
+
+    /* module opened inside the mockup */
+    .lm-view { padding: clamp(16px, 3vw, 32px) clamp(14px, 3vw, 40px) clamp(24px, 4vw, 48px); }
+    .lm-view-bar { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; margin: 0 0 16px; }
+    .lm-view-title { margin: 0; font-size: clamp(24px, 3.4vw, 38px); letter-spacing: -.02em; font-weight: 800; color: var(--ink); }
+    .lm-back {
+      padding: .5em clamp(14px, 1.6vw, 20px);
+      background: #12263a; color: #eef1f7;
+      border: 2px solid var(--rx-lime); border-radius: 99px;
+      font: 700 clamp(13px, .3vw + 12px, 15px) "Plus Jakarta Sans", system-ui, sans-serif;
+      white-space: nowrap; cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+    .lm-back:hover, .lm-back:focus-visible { background: var(--rx-lime); color: #12263a; }
+    .lm-frame {
+      display: block; width: 100%; height: clamp(520px, 78vh, 860px);
+      background: var(--bg); border: 1px solid color-mix(in srgb, var(--rx-blue) 30%, transparent); border-radius: 14px;
+    }
+    .lm-soon {
+      padding: clamp(32px, 6vw, 72px) clamp(16px, 4vw, 48px); text-align: center;
+      background: var(--bg); color: var(--sub);
+      border: 2px dashed color-mix(in srgb, var(--rx-blue) 35%, transparent); border-radius: 14px;
+    }
+    .lm-soon h4 { margin: 0 0 8px; font-size: clamp(20px, 2.4vw, 28px); font-weight: 800; color: var(--ink); }
+    .lm-soon p { margin: 0 auto; max-width: 46ch; }
+
+    .lm :is(a, button):focus-visible, .lm-seg button:focus-visible { outline: 3px solid #ffb703; outline-offset: 3px; }
+
+    /* ---------- Feedback / comments section (same tokens as the rest of the page) ---------- */
+    .fb { background: var(--sec); padding: clamp(40px, 6vw, 80px) clamp(16px, 5vw, 64px) clamp(48px, 7vw, 90px); border-top: 1px solid var(--rx-chart-grid); }
+    .fb h2 { margin: 0 0 6px; font-size: clamp(32px, 5vw, 56px); letter-spacing: -.03em; font-weight: 800; line-height: 1.1; }
+    .fb-lead { margin: 0 0 clamp(24px, 4vw, 40px); color: var(--sub); max-width: 760px; }
+    .fb-grid {
+      display: grid; grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "brand" "list" "text" "qr";
+      gap: clamp(20px, 3vw, 36px) clamp(20px, 4vw, 56px); align-items: start;
+    }
+        .fb-brand { grid-area: brand; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; }
+    .fb-list  { grid-area: list; }
+    .fb-text  { grid-area: text; }
+    .fb-qr    { grid-area: qr; justify-self: end; text-align: center; }
+
+    .fb-card { background: var(--bg); border: 1px solid color-mix(in srgb, var(--rx-blue) 30%, transparent); border-radius: 20px; box-shadow: 0 8px 24px rgba(8, 18, 30, .10); }
+    .fb-form { display: flex; flex-direction: column; gap: 14px; padding: clamp(16px, 2.4vw, 28px); }
+    .fb-form label, .fb-stars-label { font-weight: 800; font-size: 15px; color: var(--ink); }
+    .fb-form input[type="text"], .fb-form input[type="email"], .fb-form textarea {
+      width: 100%; padding: .7em .9em; margin-top: 6px;
+      background: var(--sec); color: var(--ink);
+      border: 2px solid color-mix(in srgb, var(--rx-blue) 35%, transparent); border-radius: 12px;
+      font: 500 16px/1.4 "Plus Jakarta Sans", system-ui, sans-serif;
+    }
+    .fb-form textarea { min-height: 220px; resize: vertical; }
+    .fb-form :is(input, textarea):focus, .fb-form :is(input, textarea):focus-visible { outline: none; border-color: var(--rx-blue); }
+    .fb-stars { display: flex; align-items: center; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+    .fb-star { width: 38px; height: 38px; padding: 0; display: grid; place-items: center; background: transparent; border: 0; border-radius: 10px; cursor: pointer; color: var(--rx-chart-grid); transition: color .12s, transform .12s; }
+    .fb-star svg { width: 28px; height: 28px; fill: currentColor; }
+    .fb-star.on { color: var(--rx-lime); }
+    .fb-star:hover { transform: scale(1.12); }
+    .fb-star:focus, .fb-star:focus-visible { outline: none; }
+    .fb-star:focus-visible { transform: scale(1.12); }
+    .fb-score { margin-left: 8px; font-weight: 800; color: var(--sub); font-variant-numeric: tabular-nums; }
+    .fb-submit { align-self: flex-start; padding: .65em 1.8em; background: #12263a; color: #eef1f7; border: 2px solid var(--rx-lime); border-radius: 99px; font: 800 16px "Plus Jakarta Sans", system-ui, sans-serif; cursor: pointer; transition: background .15s, color .15s; }
+    .fb-submit:hover, .fb-submit:focus-visible { background: var(--rx-lime); color: #12263a; }
+    .fb-submit:focus, .fb-submit:focus-visible { outline: none; }
+    .fb-submit[disabled] { opacity: .6; cursor: progress; }
+    .fb-status { margin: 0; min-height: 1.4em; font-size: 14px; font-weight: 700; color: var(--sub); }
+    .fb-status.ok { color: #3f7a00; }
+    :root[data-theme="dark"] .fb-status.ok { color: var(--rx-lime); }
+    .fb-status.err { color: #d93636; }
+
+    .fb-logo { width: clamp(200px, 28vw, 320px); height: auto; object-fit: contain; background: none; border: 0; border-radius: 0; padding: 0; }
+    .fb-brand p { margin: 0; max-width: 28ch; font-weight: 800; font-size: clamp(17px, .5vw + 15px, 20px); letter-spacing: -.01em; }
+
+    .fb-list-head { display: flex; justify-content: space-between; padding: 0 6px 8px; font-weight: 800; font-size: 14px; color: var(--sub); }
+    .fb-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+    .fb-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; align-items: start; padding: 12px 16px; background: var(--bg); border: 1px solid color-mix(in srgb, var(--rx-blue) 30%, transparent); border-radius: 14px; }
+    .fb-who { font-weight: 800; font-size: 15px; }
+    .fb-when { margin-left: 8px; font-weight: 700; font-size: 12.5px; color: var(--sub); }
+    .fb-msg { margin: 2px 0 0; font-size: 15px; line-height: 1.45; overflow-wrap: anywhere; }
+    .fb-reply { margin: 8px 0 0; padding: 6px 12px; border-left: 4px solid var(--rx-lime); background: var(--sec); border-radius: 0 10px 10px 0; font-size: 14px; color: var(--sub); }
+    .fb-reply b { color: var(--ink); }
+    .fb-rate { display: inline-flex; gap: 1px; white-space: nowrap; }
+    .fb-rate svg { width: 16px; height: 16px; fill: var(--rx-chart-grid); }
+    .fb-rate svg.on { fill: var(--rx-lime); }
+    .fb-empty { padding: 16px; text-align: center; color: var(--sub); }
+    .fb-note { margin: 10px 6px 0; font-size: 13px; color: var(--sub); }
+
+    .fb-text { min-height: 120px; padding: clamp(14px, 2vw, 24px); color: var(--ink); }
+    .fb-text p { margin: 0; color: var(--sub); }
+    .fb-qr-box { width: clamp(150px, 18vw, 200px); aspect-ratio: 1; display: grid; place-items: center; background: #fff; color: #12263a; border: 4px solid #12263a; border-radius: 16px; font-weight: 800; font-size: clamp(20px, 2vw, 26px); line-height: 1.1; }
+    .fb-qr-box img { width: 100%; height: 100%; object-fit: contain; border-radius: 10px; }
+    .fb-qr figcaption { margin-top: 8px; font-weight: 800; font-size: 15px; }
+
+    /* review cards (masonry), summary card, small "View reply" toggle */
+    .fb-summary { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 20px; margin-bottom: 14px; text-align: center; }
+    .fb-summary h3 { margin: 0; font-size: clamp(20px, 2vw, 26px); font-weight: 800; letter-spacing: -.02em; }
+    .fb-avg { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 22px; }
+    .fb-avg .fb-rate svg { width: 20px; height: 20px; }
+    .fb-summary p { margin: 0; color: var(--sub); font-size: 14px; }
+    .fb-write { margin-top: 8px; padding: .6em 2em; background: #12263a; color: #eef1f7; border: 2px solid var(--rx-lime); border-radius: 99px; font: 800 15px "Plus Jakarta Sans", system-ui, sans-serif; cursor: pointer; transition: background .15s, color .15s; }
+    .fb-write:hover { background: var(--rx-lime); color: #12263a; }
+    .fb-write:focus, .fb-write:focus-visible { outline: none; }
+    .fb-rows { display: block; columns: 2 240px; column-gap: 14px; }
+    .fb-row { display: block; break-inside: avoid; margin: 0 0 14px; padding: 16px; border-radius: 16px; box-shadow: 0 6px 18px rgba(8, 18, 30, .08); }
+    .fb-top { display: flex; align-items: center; gap: 12px; }
+    .fb-av { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; color: #fff; font-weight: 800; font-size: 17px; }
+    .fb-row > .fb-rate { margin: 12px 0 6px; }
+    .fb-row .fb-rate svg { width: 18px; height: 18px; }
+    .fb-foot { margin-top: 10px; }
+    .fb-vr { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px 4px 4px; background: transparent; border: 0; border-radius: 8px; color: var(--rx-ico); font: 700 13px "Plus Jakarta Sans", system-ui, sans-serif; cursor: pointer; }
+    .fb-vr svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .fb-vr:hover { text-decoration: underline; }
+    .fb-vr:focus, .fb-vr:focus-visible { outline: none; }
+    .fb-foot .fb-reply { margin-top: 8px; }
+    .fb-dialog { width: min(520px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); margin: auto; padding: 0; overflow: auto; background: var(--bg); color: var(--ink); border: 0; border-radius: 20px; box-shadow: 0 24px 60px rgba(0, 0, 0, .4); }
+    .fb-dialog::backdrop { background: rgba(13, 28, 43, .75); backdrop-filter: blur(3px); }
+    .fb-dialog[open] { animation: loginPop .2s ease-out; }
+    .fb-dialog .fb-form { border: 0; box-shadow: none; background: transparent; padding-top: 48px; }
+    .fb-dialog .fb-form textarea { min-height: 160px; }
+    .fb-dialog-close { position: absolute; top: 10px; right: 10px; z-index: 2; width: 38px; height: 38px; border: 0; border-radius: 50%; background: transparent; color: var(--sub); font: 700 26px/1 "Plus Jakarta Sans", system-ui, sans-serif; cursor: pointer; }
+    .fb-dialog-close:hover { background: color-mix(in srgb, var(--rx-blue) 22%, transparent); color: var(--ink); }
+    .fb-dialog-close:focus, .fb-dialog-close:focus-visible { outline: none; }
+
+    .fb-text { min-height: 0; padding: 0 clamp(4px, 1vw, 12px); }
+    .fb-text p { max-width: 62ch; color: var(--ink); font-size: clamp(16px, .5vw + 14px, 19px); line-height: 1.65; }
+
+    @media (max-width: 560px) { .fb-rows { columns: 1; } }
+    /* proportions: scale logo, text, QR and cards together on every screen size */
+    .fb-grid { align-items: center; }
+    .fb-when { margin-left: 0; }
+    .fb-qr { justify-self: center; }
+    .fb-text p { max-width: 60ch; }
+    /* everything centered in one column */
+    .fb h2, .fb-lead { text-align: center; }
+    .fb-lead { margin-left: auto; margin-right: auto; }
+    .fb-grid { justify-items: center; gap: clamp(24px, 4vw, 44px); }
+    .fb-list { width: min(100%, 860px); }
+    .fb-note { text-align: center; }
+    .fb-text { width: min(100%, 62ch); text-align: center; }
+    .fb-text p { margin: 0 auto; }
+
+    @media (max-width: 1000px) {
+      .fb-logo { width: clamp(160px, 24vw, 240px); }
+      .fb-brand p { font-size: 16px; }
+    }
+    @media (max-width: 860px) {
+      .fb-logo { width: clamp(180px, 50vw, 260px); }
+      .fb-text { text-align: center; }
+      .fb-text p { margin: 0 auto; }
+    }
+    @media (max-width: 420px) {
+      .fb-grid { gap: 20px; }
+      .fb-summary { padding: 16px; }
+      .fb-row { padding: 14px; }
+      .fb-qr-box { width: 140px; }
+    }
+
+
+    @media (max-width: 860px) {
+      .fb-grid { grid-template-columns: 1fr; grid-template-areas: "brand" "list" "text" "qr"; }
+      .fb-qr { justify-self: center; }
+    }
+
+    /* Users: last section on the page, always dark (ignores the light/dark toggle) */
+    .users {
+      --sec: #0f2031; --ink: #eef1f7; --sub: #9fb2c6;
+      --rx-chart-line: #eef1f7; --rx-chart-grid: #24405a; --rx-chart-muted: #9fb2c6;
+      --rx-chart-bg: #0f2031; --rx-chart-text: #eef1f7;
+      --rx-chart-registered: #95d600; --rx-chart-total: #b8c4d0; --rx-chart-unregistered: #ff9b3d;
+      background: #0f2031; color: #eef1f7; border-top: 1px solid #24405a;
+    }
+    .users { padding: clamp(24px, 3.5vw, 44px) clamp(16px, 5vw, 64px) clamp(28px, 4vw, 52px); }
+    .users h2 { font-size: clamp(24px, 3.2vw, 34px); }
+    .users .wrap > p { margin-bottom: 14px; font-size: 14px; }
+    .users-chart { max-width: none; width: 100%; }
+  </style>
+</head>
+<body>
+
+  <header class="nav" id="top">
+    <nav aria-label="Main">
+      <ul class="nav-links">
+        <li><a href="#top" id="homeLink">Home</a></li>
+        <li><a href="MocReport.html">Reports</a></li>
+        <li><a href="#feedback">Comments</a></li>
+        <li><a href="privacy%20stement.html">Privacy</a></li>
+      </ul>
+    </nav>
+    <div class="nav-actions">
+      <a class="nav-meet" href="Bricing.html">Meet Juan!</a>
+      <!-- opens the stand-alone login page -->
+      <a class="nav-signin" id="loginBtn" href="login.html" >Sign in</a>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- Hero: navy section, text left, logo + button right -->
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-text">
+          <div class="hero-hi">Hi!</div>
+          <h1>Welcome to RaXa</h1>
+        </div>
+        <div class="hero-side">
+          <img class="hero-img" src="assets/logowhite.png" alt="RaXa">
+          <p class="hero-bubble">Why pandas? Because we do more with less.</p>
+          <a class="rx-btn-neon rx-btn-neon--wiggle hero-btn" href="ws-viewpag.html">52 Days Free Trial</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Your workspace: client selector + the Landing mockup (markup, cloud and tiles are the ones from landing.html) -->
+    <section class="band" id="modules">
+      <div class="wrap">
+
+        <!-- client selector: buttons are built from MOCK_CLIENTS in the script below -->
+        <div class="lm-picker">
+          <span class="lm-picker-label" id="lmPickerLabel">Preview as</span>
+          <div class="lm-seg" id="lmPicker" role="radiogroup" aria-labelledby="lmPickerLabel"></div>
+        </div>
+
+        <div class="lm-notice" role="note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.01"/></svg>
+          <p><strong>This is only a mockup version.</strong> The Landing workspace currently demonstrates how the interface will behave for the selected client/user. Client-specific data and functionality will be connected in a later implementation.</p>
+        </div>
+
+        <!-- Landing mockup: same nav (user + account ID, trial countdown, theme toggle, log out) and workspace as landing.html -->
+        <div class="lm" id="landingMockup" data-client="" role="region" aria-label="Landing mockup">
+
+          <header class="lm-nav">
+            <div class="lm-user" id="lmUser">
+              <span class="lm-avatar" id="lmAvatar" aria-hidden="true">R</span>
+              <div class="lm-who">
+                <span class="lm-who-name" id="lmName">&nbsp;</span>
+                <span class="lm-who-id" id="lmAccountId">&nbsp;</span>
+              </div>
+            </div>
+            <span class="lm-trial" id="lmTrial" role="status" aria-live="polite">Trial: -- days left</span>
+            <div class="lm-actions">
+              <button class="lm-theme" id="lmTheme" type="button" aria-label="Switch to dark theme">
+                <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 13.5A9 9 0 1 1 10.5 3a7 7 0 0 0 10.5 10.5Z"/></svg>
+                <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+              </button>
+              <a class="lm-logout" href="login.html">Log out</a>
+            </div>
+          </header>
+
+          <div class="lm-band" id="lmBand">
+            <h2>Your workspace</h2>
+            <p>Open any module from the cloud.</p>
+
+            <div class="rx-map">
+              <div class="rx-cloudbox">
+
+                <!-- desktop: wires + cloud -->
+                <svg class="rx-wires" viewBox="0 0 1600 800" aria-hidden="true">
+                  <defs>
+                    <filter id="rxGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
+                    <filter id="rxShadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#14283c" flood-opacity=".18"/></filter>
+                    <linearGradient id="rxCloudFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" style="stop-color:var(--rx-cloud-1,#fff)"/>
+                      <stop offset="1" style="stop-color:var(--rx-cloud-2,#eaf2fb)"/>
+                    </linearGradient>
+                    <path id="rxW1" d="M435 260V318Q435 338 455 338H650"/>
+                    <path id="rxW2" d="M270 400H570"/>
+                    <path id="rxW3" d="M270 660H430"/>
+                    <path id="rxW4" d="M800 232V300"/>
+                    <path id="rxW5" d="M1165 260V318Q1165 338 1145 338H980"/>
+                    <path id="rxW6" d="M1330 400H1080"/>
+                    <path id="rxW7" d="M1330 660H1180"/>
+                  </defs>
+
+                  <g>
+                    <use href="#rxW1" class="rx-wire"/><use href="#rxW1" class="rx-flow"/>
+                    <use href="#rxW2" class="rx-wire"/><use href="#rxW2" class="rx-flow"/>
+                    <use href="#rxW3" class="rx-wire"/><use href="#rxW3" class="rx-flow"/>
+                    <use href="#rxW4" class="rx-wire"/><use href="#rxW4" class="rx-flow"/>
+                    <use href="#rxW5" class="rx-wire"/><use href="#rxW5" class="rx-flow"/>
+                    <use href="#rxW6" class="rx-wire"/><use href="#rxW6" class="rx-flow"/>
+                    <use href="#rxW7" class="rx-wire"/><use href="#rxW7" class="rx-flow"/>
+                  </g>
+
+                  <g filter="url(#rxShadow)">
+                    <path d="M520 740C400 740 340 680 340 600C340 520 400 470 470 460C470 380 540 330 620 340C650 270 730 230 810 240C900 250 950 300 960 350C1050 330 1130 380 1140 450C1220 460 1270 520 1270 600C1270 690 1200 740 1120 740Z"
+                          fill="url(#rxCloudFill)" stroke="var(--rx-blue,#2f72bf)" stroke-width="9" stroke-linejoin="round"/>
+                  </g>
+
+                  <g>
+                    <circle class="rx-dot-glow" cx="435"  cy="260" r="13" filter="url(#rxGlow)"/><circle class="rx-dot" cx="435"  cy="260" r="7"/>
+                    <circle class="rx-dot-glow" cx="270"  cy="400" r="13" filter="url(#rxGlow)"/><circle class="rx-dot" cx="270"  cy="400" r="7"/>
+                    <circle class="rx-dot-glow" cx="270"  cy="660" r="13" filter="url(#rxGlow)"/><circle class="rx-dot" cx="270"  cy="660" r="7"/>
+                    <circle class="rx-dot-glow" cx="800"  cy="232" r="13" filter="url(#rxGlow)"/><circle class="rx-dot" cx="800"  cy="232" r="7"/>
+                    <circle class="rx-dot-glow" cx="1165" cy="260" r="13" filter="url(#rxGlow)"/><circle class="rx-dot" cx="1165" cy="260" r="7"/>
+                    <circle class="rx-dot-glow" cx="1330" cy="400" r="13" filter="url(#rxGlow)"/><circle class="rx-dot" cx="1330" cy="400" r="7"/>
+                    <circle class="rx-dot-glow" cx="1330" cy="660" r="13" filter="url(#rxGlow)"/><circle class="rx-dot" cx="1330" cy="660" r="7"/>
+                  </g>
+                </svg>
+
+                <!-- phone: cloud only -->
+                <svg class="rx-cloud-m" viewBox="320 220 960 540" aria-hidden="true">
+                  <defs>
+                    <filter id="rxShadowM" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#14283c" flood-opacity=".18"/></filter>
+                    <linearGradient id="rxCloudFillM" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" style="stop-color:var(--rx-cloud-1,#fff)"/>
+                      <stop offset="1" style="stop-color:var(--rx-cloud-2,#eaf2fb)"/>
+                    </linearGradient>
+                  </defs>
+                  <g filter="url(#rxShadowM)">
+                    <path d="M520 740C400 740 340 680 340 600C340 520 400 470 470 460C470 380 540 330 620 340C650 270 730 230 810 240C900 250 950 300 960 350C1050 330 1130 380 1140 450C1220 460 1270 520 1270 600C1270 690 1200 740 1120 740Z"
+                          fill="url(#rxCloudFillM)" stroke="var(--rx-blue,#2f72bf)" stroke-width="9" stroke-linejoin="round"/>
+                  </g>
+                </svg>
+
+                <div class="rx-logo" role="img" aria-label="RaXa"></div>
+              </div>
+
+              <!-- Module tiles: change each href to wherever that module should open -->
+                <nav class="rx-tiles" aria-label="Modules">
+
+                  <a class="rx-tile" href="#human-resource" data-module="human-resource" style="--x:19.94%;--y:7.5%">
+                    <span class="rx-ext">&rarr;</span>
+                    <svg viewBox="-58 -50 116 100" aria-hidden="true">
+                      <circle cx="0" cy="-4" r="11"/><path d="M-22 40Q-22 12 0 12Q22 12 22 40"/>
+                      <circle cx="-38" cy="4" r="8"/><path d="M-52 40Q-52 18 -38 18Q-30 18 -26 22"/>
+                      <circle cx="38" cy="4" r="8"/><path d="M52 40Q52 18 38 18Q30 18 26 22"/>
+                      <rect class="rx-hl" x="10" y="-44" width="38" height="26" rx="5"/><path class="rx-hl" d="M30 -34H42M30 -27H42"/><circle cx="20" cy="-34" r="3.5"/>
+                    </svg>
+                    <b>Human Resource</b>
+                  </a>
+
+                  <a class="rx-tile" href="#customers-sales" data-module="customers-sales" style="--x:3.75%;--y:37.5%">
+                    <span class="rx-ext">&rarr;</span>
+                    <svg viewBox="-58 -50 116 100" aria-hidden="true">
+                      <circle cx="-22" cy="-14" r="11"/><path d="M-46 38Q-46 8 -22 8Q2 8 2 38Z"/>
+                      <rect x="14" y="20" width="10" height="18"/><rect x="30" y="8" width="10" height="30"/>
+                      <path class="rx-hl" d="M12 -2L26 -16L46 -34M34 -34H46V-22"/>
+                    </svg>
+                    <b>Customers and Sales</b>
+                  </a>
+
+                  <a class="rx-tile" href="#inventory-logistics" data-module="inventory-logistics" style="--x:3.75%;--y:70%">
+                    <span class="rx-ext">&rarr;</span>
+                    <svg viewBox="-58 -50 116 100" aria-hidden="true">
+                      <rect x="-50" y="-14" width="34" height="30" rx="2"/><path d="M-50 -4H-16M-33 -14V-4"/>
+                      <path d="M-8 -8H22V22H-8Z"/><path d="M22 2H38L48 12V22H22Z"/>
+                      <circle class="rx-fill" cx="4" cy="26" r="6"/><circle class="rx-fill" cx="38" cy="26" r="6"/>
+                      <path class="rx-hl" d="M-52 28H-34M-48 36H-34"/>
+                    </svg>
+                    <b>Inventory and Logistics</b>
+                  </a>
+
+                  <a class="rx-tile rx-tile--lg" href="#customer-experience" data-module="customer-experience" style="--x:41.75%;--y:1%;--w:16.5%;--h:28%">
+                    <span class="rx-ext">&rarr;</span>
+                    <svg viewBox="-58 -50 116 100" aria-hidden="true">
+                      <path d="M-34 -30H34Q44 -30 44 -20V14Q44 24 34 24H0L-18 40V24H-34Q-44 24 -44 14V-20Q-44 -30 -34 -30Z"/>
+                      <path d="M-16 -12V-4M16 -12V-4"/><path d="M-18 6Q0 20 18 6"/>
+                      <path class="rx-hl" d="M46 -40C46 -46 38 -48 38 -42C38 -48 30 -46 30 -40C30 -35 38 -31 38 -31C38 -31 46 -35 46 -40Z"/>
+                    </svg>
+                    <b>Customer Experience</b>
+                  </a>
+
+                  <a class="rx-tile" href="#purchase-expenses" data-module="purchase-expenses" style="--x:65.56%;--y:7.5%">
+                    <span class="rx-ext">&rarr;</span>
+                    <svg viewBox="-58 -50 116 100" aria-hidden="true">
+                      <path d="M-50 -34H-36L-26 16H26L36 -18H-32"/>
+                      <circle class="rx-fill" cx="-16" cy="30" r="6"/><circle class="rx-fill" cx="18" cy="30" r="6"/>
+                      <circle class="rx-hl" cx="4" cy="-8" r="11"/><path class="rx-hl" d="M4 -14V-2M0 -10H8"/>
+                    </svg>
+                    <b>Purchase and Expenses</b>
+                  </a>
+
+                  <a class="rx-tile" href="#dashboard" data-module="dashboard" style="--x:83.125%;--y:37.5%">
+                    <span class="rx-ext">&rarr;</span>
+                    <svg viewBox="-58 -50 116 100" aria-hidden="true">
+                      <rect x="-48" y="-38" width="96" height="76" rx="6"/><path d="M-48 -22H48"/>
+                      <path d="M-34 28V6M-24 28V-4M-14 28V12"/>
+                      <path class="rx-hl" d="M4 22L16 8L26 16L40 -6"/>
+                    </svg>
+                    <b>Dashboard</b>
+                  </a>
+
+                  <a class="rx-tile" href="management.html" data-module="management" style="--x:83.125%;--y:70%">
+                    <span class="rx-ext">&rarr;</span>
+                    <svg viewBox="-58 -50 116 100" aria-hidden="true">
+                      <path d="M-44 -24H44M-44 0H44M-44 24H44"/>
+                      <circle class="rx-fill" cx="-18" cy="-24" r="8"/>
+                      <circle class="rx-fill rx-hl" cx="16" cy="0" r="8"/>
+                      <circle class="rx-fill" cx="-2" cy="24" r="8"/>
+                    </svg>
+                    <b>Management</b>
+                  </a>
+
+                </nav>
+            </div>
+          </div>
+
+          <!-- a clicked module opens here, inside this section -->
+          <div class="lm-view" id="lmView" hidden>
+            <div class="lm-view-bar">
+              <button class="lm-back" id="lmBack" type="button">&larr; Back to workspace</button>
+              <h3 class="lm-view-title" id="lmViewTitle"></h3>
+            </div>
+            <div id="lmViewBody"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- Panda traits, A.I. tools -->
+    <section class="traits" id="traits">
+      <div class="wrap">
+        <h2>Panda traits, A.I. tools</h2>
+        <div class="trait-grid">
+        <article class="trait">
+          <span class="trait-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9h14M5 15h14M10 4 8 20M16 4l-2 16"/></svg></span>
+          <h3>Bamboo specialists</h3>
+          <p>Bamboo makes up about 99% of a giant panda's diet, and a panda can eat up to 38 kg of it a day. Like a focused A.I. tool, it does one job and does it extremely well.</p>
+        </article>
+        <article class="trait">
+          <span class="trait-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11v9H4v-9h3ZM7 11l4-8a2 2 0 0 1 2 2v4h6a2 2 0 0 1 2 2l-1.5 6.5A2 2 0 0 1 17.5 20H7"/></svg></span>
+          <h3>A built-in &ldquo;thumb&rdquo;</h3>
+          <p>An enlarged wrist bone works like a thumb and helps pandas grip bamboo. Good tools adapt the same way: one small addition that makes a hard job easy.</p>
+        </article>
+        <article class="trait">
+          <span class="trait-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 13.5A9 9 0 1 1 10.5 3a7 7 0 0 0 10.5 10.5Z"/></svg></span>
+          <h3>Energy savers</h3>
+          <p>On a low-energy diet, pandas rest for many hours a day and move slowly to save effort. Efficient A.I. builds your app fast without wasted work.</p>
+        </article>
+        <article class="trait">
+          <span class="trait-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-9M12 12C12 8 9 6 5 6c0 4 3 6 7 6ZM12 14c0-3 2.5-5 6-5 0 3.5-2.5 5-6 5Z"/></svg></span>
+          <h3>Tiny beginnings</h3>
+          <p>A newborn cub weighs about 100 grams, roughly a stick of butter. Every great system starts small and grows through feedback.</p>
+        </article>
+        <article class="trait">
+          <span class="trait-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18Z" fill="currentColor"/></svg></span>
+          <h3>Bold black and white</h3>
+          <p>Their patches help pandas recognize each other and blend into snow and shade. Clear design does the same for your screens: easy to read, hard to miss.</p>
+        </article>
+        <article class="trait">
+          <span class="trait-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></span>
+          <h3>Scent and sound messages</h3>
+          <p>Pandas are mostly solitary, so they share information with scent marks and calls from a distance. Your apps keep your team connected the same way, from any device.</p>
+        </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feedback: comment form, comments + replies from the Comments table, text area, QR PH -->
+    <section class="fb" id="feedback">
+      <div class="wrap">
+        <h2>Comments</h2>
+        <p class="fb-lead">Tell us what works and what doesn&rsquo;t. Every comment is read by the pandas.</p>
+
+        <div class="fb-grid">
+
+          <div class="fb-brand">
+            <img class="fb-logo" src="assets/logonavy.png" alt="RaXa">
+            <p>This greatly helps us improve stuff</p>
+          </div>
+
+          <div class="fb-list">
+            <div class="fb-summary fb-card" id="fbSummary"></div>
+            <ul class="fb-rows" id="fbRows"></ul>
+            <p class="fb-note" id="fbNote"></p>
+          </div>
+
+          <div class="fb-text" id="fbText">
+            <p>RaXa Systems began with two pandas, one big idea and a lot of bamboo. We had no huge team and no big budget. What we had was each other, and the people who believed in us along the way: our first users, our friends, and everyone who took the time to tell us what worked and what didn&rsquo;t. Every comment on this page helped shape what you see today. Two pandas built this, but it took all of you to make it real. Thank you for growing with us. The best is still ahead.</p>
+          </div>
+
+          <figure class="fb-qr" style="margin:0">
+            <div class="fb-qr-box" id="fbQr">QR PH<br>CODE</div>
+            <figcaption>Buy us a bamboo</figcaption>
+          </figure>
+        </div>
+
+        <!-- the comment form pops up from the "Write a comment" button -->
+        <dialog class="fb-dialog" id="fbDialog" aria-label="Write a comment">
+          <button class="fb-dialog-close" id="fbClose" type="button" aria-label="Close">&times;</button>
+          <form class="fb-form fb-card" id="fbForm" novalidate>
+            <div>
+              <label for="fbName">Email</label>
+              <input type="email" id="fbName" name="email" maxlength="120" autocomplete="email" required>
+            </div>
+            <div>
+              <label for="fbComment">Comment</label>
+              <textarea id="fbComment" name="comment" maxlength="1000" required></textarea>
+            </div>
+            <div>
+              <span class="fb-stars-label" id="fbStarsLabel">Rating (0&ndash;5 stars)</span>
+              <div class="fb-stars" id="fbStars" role="radiogroup" aria-labelledby="fbStarsLabel"></div>
+            </div>
+            <button class="fb-submit" id="fbSubmit" type="submit">Submit</button>
+            <p class="fb-status" id="fbStatus" role="status" aria-live="polite"></p>
+          </form>
+        </dialog>
+      </div>
+    </section>
+
+    <!-- Users chart: charts1.js draws both lines into #usersChart and updates itself every day -->
+    <section class="band users" id="users">
+      <div class="wrap">
+        <h2>Users</h2>
+        <p id="usersCaption"></p>
+        <svg id="usersChart" class="users-chart" viewBox="0 0 1000 340" role="img" aria-label="Registered and unregistered users since 2021"></svg>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>&copy; 2021 RaXa Systems. Built with care by two pandas.</footer>
+
+  <!-- Sign in pop up: loads login.html (the sign-in form lives only there) -->
+  <dialog class="login-dialog" id="loginDialog" aria-label="Sign in">
+    <button class="login-close" id="loginClose" type="button" aria-label="Close">&times;</button>
+    <iframe class="login-frame" id="loginFrame" title="Sign in" loading="lazy"></iframe>
+  </dialog>
+
+  <script src="assets/charts1.js"></script>
+
+  <script>
+    // Landing mockup: user selector. Each user is a real record in the Clients table, loaded the same way landing.html loads it.
+    // To add a user, add one object to MOCK_CLIENTS.
+    (function () {
+      // ---- settings --------------------------------------------------------
+      var API = "https://script.google.com/macros/s/AKfycbxKI9W4narvcHMqxpW1nM8sSsLmcIGCywGV5-8iYpgi15cAW9SVXp7UEr7bWwWgieT10w/exec";
+      var TRIAL_DAYS = 52;       // same as landing.html
+
+      // name = the company name, shown on the toggle and in the mockup nav
+      // accountId / userId = [Account ID] and [User ID] of that user's row in the Clients / Users tables
+      // modules = optional fallback list (comma separated), used only if the sheet cannot be reached
+      //           or has nothing in its Modules column. Empty = show every module.
+      var MOCK_CLIENTS = [
+        { id: "DefaultUser1", name: "Ra Systems", accountId: "DefaultClient1", userId: "DefaultUser1", modules: "" },
+        { id: "DefaultUser2", name: "Xa Models",  accountId: "DefaultClient2", userId: "DefaultUser2", modules: "" }
+      ];
+      // tile order = wire/dot order inside the cloud drawing
+      var MODULE_ORDER = ["human-resource", "customers-sales", "inventory-logistics", "customer-experience", "purchase-expenses", "dashboard", "management"];
+      var ALWAYS_SHOWN = ["management"];   // never filtered out (the app's own management page)
+      var STORE_KEY = "raxa-mock-client";
+      // ---------------------------------------------------------------------
+
+      var root   = document.getElementById("landingMockup"),
+          picker = document.getElementById("lmPicker"),
+          elName = document.getElementById("lmName"),
+          elId   = document.getElementById("lmAccountId"),
+          elAv   = document.getElementById("lmAvatar"),
+          elTrial = document.getElementById("lmTrial"),
+          tiles  = root.querySelectorAll(".rx-tile[data-module]"),
+          defaultHref = {}, buttons = [], current = null;
+
+      Array.prototype.forEach.call(tiles, function (t) { defaultHref[t.dataset.module] = t.getAttribute("href"); });
+      var wireUses = root.querySelectorAll('use[href^="#rxW"]'),
+          dotGlows = root.querySelectorAll(".rx-dot-glow"),
+          dotCores = root.querySelectorAll(".rx-dot");
+
+      // ---- same helpers as landing.html -----------------------------------
+      function norm(s) { return String(s).toLowerCase().replace(/[^a-z0-9]/g, ""); }
+      function pick(row, names) {
+        for (var n = 0; n < names.length; n++)
+          for (var k in row)
+            if (norm(k) === names[n] && row[k] !== "" && row[k] != null) return String(row[k]).trim();
+        return "";
+      }
+      function pickDate(row) {
+        var v = pick(row, ["signupdate", "dateregistered", "registrationdate", "datecreated", "createdat", "startdate", "trialstart", "date"]);
+        if (v) return v;
+        for (var k in row) if (/date/i.test(k) && row[k]) return row[k];
+        return "";
+      }
+      function parseDay(v) {
+        var s = String(v), d;
+        var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+        d = m ? new Date(+m[1], +m[2] - 1, +m[3]) : new Date(s);
+        return isNaN(d) ? null : new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      }
+      function daysLeft(signup) {
+        var t = new Date(); t = new Date(t.getFullYear(), t.getMonth(), t.getDate());
+        var used = Math.round((t - signup) / 86400000);
+        return Math.max(0, TRIAL_DAYS - Math.max(0, used));
+      }
+      var NAME_COLS = ["name", "fullname", "clientname", "companyname", "company", "username"];
+
+      // ---- module filter ---------------------------------------------------
+      // "Customers & Sales", "customers-and-sales" and "Customers and Sales" all become the same key
+      function modKey(v) { return String(v).toLowerCase().replace(/&/g, " ").replace(/\band\b/g, " ").replace(/[^a-z0-9]/g, ""); }
+      function parseModules(v) {
+        if (!v) return null;
+        var list = String(v).split(/[,;|\n]+/).map(modKey).filter(Boolean);
+        return list.length ? list : null;       // nothing listed = every module
+      }
+      function applyModules(list) {
+        var allowed = list ? list.concat(ALWAYS_SHOWN.map(modKey)) : null;
+        Array.prototype.forEach.call(tiles, function (t) {
+          var m = t.dataset.module, show = !allowed || allowed.indexOf(modKey(m)) > -1, i = MODULE_ORDER.indexOf(m);
+          t.style.display = show ? "" : "none";
+          if (i < 0) return;
+          Array.prototype.forEach.call(wireUses, function (u) {
+            if (u.getAttribute("href") === "#rxW" + (i + 1)) u.style.display = show ? "" : "none";
+          });
+          if (dotGlows[i]) dotGlows[i].style.display = show ? "" : "none";
+          if (dotCores[i]) dotCores[i].style.display = show ? "" : "none";
+        });
+      }
+
+      // ---- data: Clients row (trial) + Users row (nickname, modules), one request each, cached ----
+      function rows(table, params, limit) {
+        var url = API + "?table=" + table + "&limit=" + limit;
+        for (var k in params) if (params[k]) url += "&" + encodeURIComponent(k) + "=" + encodeURIComponent(params[k]);
+        return fetch(url)
+          .then(function (r) { return r.json(); })
+          .then(function (res) {
+            if (!res || !res.ok) throw new Error((res && res.error) || "request failed");
+            return res.data || [];
+          });
+      }
+
+      function load(c) {
+        if (c._p) return c._p;
+        var limit = c.accountId ? 1 : 1000;
+        c._p = Promise.all([
+          rows("Clients", { "Account ID": c.accountId }, limit),
+          c.userId ? rows("Users", { "Account ID": c.accountId, "User ID": c.userId }, 1).catch(function () { return []; })
+                   : Promise.resolve([])
+        ]).then(function (both) {
+          var list = both[0], urow = both[1][0] || null, row = null;
+          if (c.accountId) row = list[0];
+          else for (var i = 0; i < list.length && !row; i++)
+            if (norm(pick(list[i], NAME_COLS)) === norm(c.name)) row = list[i];
+          if (!row) throw new Error("no Clients row for " + (c.accountId || c.name));
+          var d = parseDay(pickDate(row));
+          if (!d) throw new Error("no sign-up date in the Clients row");
+          return {
+            name: c.name,
+            accountId: c.accountId || pick(row, ["accountid"]),
+            trialDaysLeft: daysLeft(d),
+            modules: parseModules((urow && pick(urow, ["modules"])) || pick(row, ["modules"]) || c.modules)
+          };
+        }).catch(function (ex) { c._p = null; throw ex; });
+        return c._p;
+      }
+
+      // ---- render ----------------------------------------------------------
+      function find(id) {
+        for (var i = 0; i < MOCK_CLIENTS.length; i++) if (MOCK_CLIENTS[i].id === id) return MOCK_CLIENTS[i];
+        return null;
+      }
+
+      function showUser(name, idText) {
+        elName.textContent = name;
+        elId.textContent = idText;
+        elAv.textContent = (name.trim().charAt(0) || "R").toUpperCase();
+      }
+      function showTrial(n) {
+        elTrial.classList.remove("is-loading");
+        elTrial.classList.toggle("is-ended", n === 0);
+        elTrial.textContent = "Trial: " + (n < 10 ? "0" : "") + n + " days left";
+      }
+      function showEmptyTrial(loading) {
+        elTrial.classList.toggle("is-loading", !!loading);
+        elTrial.classList.remove("is-ended");
+        elTrial.textContent = "Trial: -- days left";
+      }
+
+      // tiles that open a page get ?id=<account> so that page loads this user (same ?id= landing.html accepts)
+      function setLinks(c, accountId) {
+        Array.prototype.forEach.call(tiles, function (t) {
+          var m = t.dataset.module, h = (c.links && c.links[m]) || defaultHref[m];
+          if (accountId && /\.html$/i.test(h)) h += "?id=" + encodeURIComponent(accountId);
+          t.setAttribute("href", h);
+        });
+      }
+
+      function setClient(id, quiet) {
+        var c = find(id) || MOCK_CLIENTS[0];
+        if (!c || (current && current.id === c.id)) return;
+        current = c;
+        root.dataset.client = c.id;
+        closeModule(false);
+
+        buttons.forEach(function (b) {
+          var on = b.dataset.client === c.id;
+          b.setAttribute("aria-checked", on ? "true" : "false");
+          b.tabIndex = on ? 0 : -1;
+        });
+
+        showUser(c.name, c.accountId ? "Account ID: " + c.accountId : "Loading\u2026");
+        showEmptyTrial(true);
+        setLinks(c, c.accountId);
+        applyModules(parseModules(c.modules));
+
+        if (!quiet) {
+          root.classList.remove("is-switching"); void root.offsetWidth; root.classList.add("is-switching");
+          try { sessionStorage.setItem(STORE_KEY, c.id); } catch (e) {}
+        }
+
+        load(c).then(function (data) {
+          if (current !== c) return;               // user switched again while loading
+          c.data = data;
+          showUser(data.name, data.accountId ? "Account ID: " + data.accountId : "");
+          showTrial(data.trialDaysLeft);
+          setLinks(c, data.accountId);
+          applyModules(data.modules);
+          document.dispatchEvent(new CustomEvent("raxa:mockup-client-change", { detail: { client: c, data: data } }));
+        }).catch(function (ex) {
+          console.warn("RaXa mockup:", ex);
+          if (current !== c) return;
+          showUser(c.name, "Account not found");
+          showEmptyTrial(false);
+        });
+      }
+
+      // ---- open a module inside this section instead of leaving the page ----
+      var band = document.getElementById("lmBand"),
+          view = document.getElementById("lmView"),
+          viewTitle = document.getElementById("lmViewTitle"),
+          viewBody = document.getElementById("lmViewBody"),
+          backBtn = document.getElementById("lmBack"),
+          openTile = null;
+
+      function embedUrl(href) {
+        return href + (href.indexOf("?") > -1 ? "&" : "?") + "embed=1&theme=" + (document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+      }
+      function openModule(tile) {
+        var href = tile.getAttribute("href") || "", title = (tile.querySelector("b") || tile).textContent.trim();
+        openTile = tile;
+        viewTitle.textContent = title;
+        viewBody.textContent = "";
+        if (/\.html(\?|#|$)/i.test(href)) {            // a real page: show it in a frame
+          var f = document.createElement("iframe");
+          f.className = "lm-frame"; f.title = title; f.dataset.href = href; f.src = embedUrl(href);
+          viewBody.appendChild(f);
+        } else {                                        // no page yet: placeholder panel
+          var box = document.createElement("div"), h = document.createElement("h4"), p = document.createElement("p");
+          box.className = "lm-soon"; h.textContent = title;
+          p.textContent = "This module opens here once it is connected. It is part of the mockup for now.";
+          box.appendChild(h); box.appendChild(p); viewBody.appendChild(box);
+        }
+        band.hidden = true; view.hidden = false;
+        root.scrollIntoView({ behavior: "smooth", block: "start" });
+        backBtn.focus({ preventScroll: true });
+        document.dispatchEvent(new CustomEvent("raxa:mockup-module-open", { detail: { module: tile.dataset.module, href: href } }));
+      }
+      function closeModule(refocus) {
+        if (view.hidden) return;
+        viewBody.textContent = "";
+        view.hidden = true; band.hidden = false;
+        if (refocus && openTile) openTile.focus({ preventScroll: true });
+        openTile = null;
+      }
+      Array.prototype.forEach.call(tiles, function (t) {
+        t.addEventListener("click", function (e) {
+          if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;  // new-tab clicks still work
+          e.preventDefault();
+          openModule(t);
+        });
+      });
+      backBtn.addEventListener("click", function () { closeModule(true); });
+      root.addEventListener("keydown", function (e) { if (e.key === "Escape" && !view.hidden) closeModule(true); });
+
+      // build the selector from the list
+      MOCK_CLIENTS.forEach(function (c) {
+        var b = document.createElement("button");
+        b.type = "button"; b.textContent = c.name; b.dataset.client = c.id;
+        b.setAttribute("role", "radio"); b.setAttribute("aria-checked", "false"); b.tabIndex = -1;
+        b.addEventListener("click", function () { setClient(c.id); });
+        picker.appendChild(b); buttons.push(b);
+      });
+
+      // arrow keys / Home / End move between users like a radio group
+      picker.addEventListener("keydown", function (e) {
+        var i = buttons.indexOf(document.activeElement), n = buttons.length;
+        if (i < 0) return;
+        var j = { ArrowRight: i + 1, ArrowDown: i + 1, ArrowLeft: i - 1, ArrowUp: i - 1, Home: 0, End: n - 1 }[e.key];
+        if (j === undefined) return;
+        e.preventDefault();
+        j = (j + n) % n;
+        buttons[j].focus(); setClient(MOCK_CLIENTS[j].id);
+      });
+
+      // light / dark toggle (same behaviour as landing.html): page theme + module stylesheet together
+      var themeBtn = document.getElementById("lmTheme"), moduleCss = document.getElementById("moduleCss");
+      function themeLabel() {
+        themeBtn.setAttribute("aria-label", document.documentElement.dataset.theme === "dark" ? "Switch to light theme" : "Switch to dark theme");
+      }
+      themeBtn.addEventListener("click", function () {
+        var t = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        document.documentElement.dataset.theme = t;
+        moduleCss.setAttribute("href", "assets/module1" + t + ".css");
+        themeLabel();
+        try { localStorage.setItem("raxa-theme", t); } catch (e) {}
+        var fr = viewBody.querySelector("iframe");
+        if (fr) fr.src = embedUrl(fr.dataset.href);
+      });
+      themeLabel();
+
+      var saved = ""; try { saved = sessionStorage.getItem(STORE_KEY) || ""; } catch (e) {}
+      setClient(saved || MOCK_CLIENTS[0].id, true);
+
+      // hooks for the real implementation later
+      window.RaXaMockup = {
+        clients: MOCK_CLIENTS,
+        getClient: function () { return current; },
+        setClient: function (id) { setClient(id); }
+      };
+    })();
+  </script>
+
+  <script>
+    // Home: always scroll back to the very top
+    document.getElementById("homeLink").addEventListener("click", function (e) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      if (history.replaceState) history.replaceState(null, "", location.pathname + location.search);
+    });
+  </script>
+
+  <script>
+    // Sign in pop up: shows login.html in a dialog (the Sign in link goes straight to login.html if dialogs are unsupported)
+    (function () {
+      var dlg = document.getElementById("loginDialog"),
+          frame = document.getElementById("loginFrame"),
+          openBtn = document.getElementById("loginBtn"),
+          closeBtn = document.getElementById("loginClose");
+      if (!dlg || typeof dlg.showModal !== "function") return;
+
+      openBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        var src = "login.html?embed=1&theme=" + (document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+        if (frame.getAttribute("src") !== src) frame.setAttribute("src", src);
+        dlg.showModal();
+        document.body.classList.add("login-open");
+      });
+      function closeLogin() { dlg.close(); }
+      dlg.addEventListener("close", function () { document.body.classList.remove("login-open"); });
+      closeBtn.addEventListener("click", closeLogin);
+      // click on the dimmed backdrop closes it
+      dlg.addEventListener("mousedown", function (e) {
+        var r = dlg.getBoundingClientRect();
+        if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) closeLogin();
+      });
+      // Esc pressed inside login.html asks the page to close the dialog
+      window.addEventListener("message", function (e) {
+        if (e.source === frame.contentWindow && e.data === "raxa-close-login") closeLogin();
+      });
+    })();
+  </script>
+
+  <script>
+    // Comments section: reads and writes the "Comments" table through the same Apps Script web app as the rest of the page.
+    (function () {
+      var API = "https://script.google.com/macros/s/AKfycbxKI9W4narvcHMqxpW1nM8sSsLmcIGCywGV5-8iYpgi15cAW9SVXp7UEr7bWwWgieT10w/exec";
+      var TABLE = "Comments";        // sheet tab (must be listed in TABLES and WRITABLE in the Apps Script)
+      var LIMIT = 50;
+      var MAX_SHOWN = 5;             // cards shown (newest first)
+      var QR_IMAGE = "";             // e.g. "assets/qrph.png" once you have the real QR PH code
+
+      // placeholder entries, shown only while the table is empty or cannot be reached
+      var FABRICATED = [
+        { name: "Maria S.",  comment: "The cloud workspace is so easy to follow. Found my modules in seconds.", rating: 5, reply: "Thank you, Maria! More modules are on the way.", date: "2026-09-28" },
+        { name: "Jun D.",    comment: "Inventory screen is great, but I would love a dark mode toggle in every module.", rating: 4, reply: "Noted. Dark mode for modules is on our list.", date: "2026-09-30" },
+        { name: "Carla R.",  comment: "Sign in popup felt a bit slow on my phone.", rating: 3, reply: "Thanks for flagging it. We are looking at load time.", date: "2026-10-01" },
+        { name: "Paolo M.",  comment: "Love the pandas. Please add more report filters.", rating: 5, reply: "", date: "2026-10-03" },
+        { name: "Aly T.",    comment: "Trial countdown is helpful. Wish the pricing page explained the plans more.", rating: 4, reply: "", date: "2026-10-05" }
+      ];
+
+      var STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.95 6.2 6.8.9-5 4.7 1.25 6.7L12 17.7l-6 3.3 1.25-6.7-5-4.7 6.8-.9z"/></svg>';
+      var form = document.getElementById("fbForm"), rowsEl = document.getElementById("fbRows"),
+          note = document.getElementById("fbNote"), status = document.getElementById("fbStatus"),
+          starsEl = document.getElementById("fbStars"), submit = document.getElementById("fbSubmit"),
+          rating = 0, entries = [], usingFake = false;
+
+      if (QR_IMAGE) { var qr = document.getElementById("fbQr"), im = document.createElement("img"); im.src = QR_IMAGE; im.alt = "QR PH code"; qr.textContent = ""; qr.appendChild(im); }
+
+      // ---- popup ----
+      var dlg = document.getElementById("fbDialog");
+      function openDialog() {
+        say("");
+        if (typeof dlg.showModal === "function") dlg.showModal(); else dlg.setAttribute("open", "");
+        form.elements.email.focus();
+      }
+      function closeDialog() { if (typeof dlg.close === "function") dlg.close(); else dlg.removeAttribute("open"); }
+      document.getElementById("fbClose").addEventListener("click", closeDialog);
+      dlg.addEventListener("mousedown", function (e) {      // click on the dimmed backdrop closes it
+        var r = dlg.getBoundingClientRect();
+        if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) closeDialog();
+      });
+
+      // ---- star input: 0 to 5 ----
+      var starBtns = [], score = document.createElement("span");
+      score.className = "fb-score";
+      for (var i = 1; i <= 5; i++) (function (n) {
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "fb-star"; b.innerHTML = STAR;
+        b.setAttribute("role", "radio"); b.setAttribute("aria-label", n + (n === 1 ? " star" : " stars"));
+        b.addEventListener("click", function () { setRating(rating === n ? 0 : n); });   // click the same star again = 0
+        starsEl.appendChild(b); starBtns.push(b);
+      })(i);
+      starsEl.appendChild(score);
+      function setRating(n) {
+        rating = n;
+        starBtns.forEach(function (b, k) { b.classList.toggle("on", k < n); b.setAttribute("aria-checked", k + 1 === n ? "true" : "false"); });
+        score.textContent = n + " / 5";
+      }
+      setRating(0);
+
+      // ---- helpers ----
+      function norm(s) { return String(s).toLowerCase().replace(/[^a-z0-9]/g, ""); }
+      function pick(row, names) {
+        for (var n = 0; n < names.length; n++) for (var k in row) if (norm(k) === names[n] && row[k] !== "" && row[k] != null) return String(row[k]).trim();
+        return "";
+      }
+      // emails are never shown in full on a public page: "maria@x.com" -> "ma***"
+      function maskEmail(v) {
+        if (!v) return "Anonymous";
+        var local = String(v).split("@")[0];
+        return local.slice(0, 2) + "***";
+      }
+      function fmtDate(v) {
+        if (!v) return "";
+        var d = new Date(String(v).replace(" ", "T"));
+        if (isNaN(d)) return String(v);
+        return d.toLocaleString(undefined, { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+      }
+      function stamp() {            // "2026-10-06 13:30:00" in the visitor's local time, saved to the sheet
+        var d = new Date(), z = function (n) { return (n < 10 ? "0" : "") + n; };
+        return d.getFullYear() + "-" + z(d.getMonth() + 1) + "-" + z(d.getDate()) + " " + z(d.getHours()) + ":" + z(d.getMinutes()) + ":" + z(d.getSeconds());
+      }
+      function fromRow(r) {
+        var d = pick(r, ["dateandtime", "datetime", "date", "datecreated", "createdat", "timestamp"]);
+        return { name: maskEmail(pick(r, ["email", "name", "fullname", "username"])), comment: pick(r, ["comment", "comments", "message", "feedback"]),
+                 rating: Math.max(0, Math.min(5, Math.round(parseFloat(pick(r, ["rating", "stars"])) || 0))), reply: pick(r, ["reply", "response"]),
+                 date: fmtDate(d) };
+      }
+      function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+      function stars(n) {
+        var w = el("span", "fb-rate"); w.setAttribute("role", "img"); w.setAttribute("aria-label", n + " out of 5 stars");
+        for (var i = 1; i <= 5; i++) { w.insertAdjacentHTML("beforeend", STAR); if (i <= n) w.lastChild.classList.add("on"); }
+        return w;
+      }
+
+      var COLORS = ["#2f72bf", "#5a8700", "#12263a", "#e0612f", "#7d5fc0", "#0f8b8d"];
+      var BUBBLE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+
+      function renderSummary() {
+        var box = document.getElementById("fbSummary"); box.textContent = "";
+        var avg = entries.length ? entries.reduce(function (a, c) { return a + c.rating; }, 0) / entries.length : 0;
+        box.appendChild(el("h3", "", "What people say"));
+        var row = el("div", "fb-avg"); row.appendChild(el("span", "", avg.toFixed(1))); row.appendChild(stars(Math.round(avg))); box.appendChild(row);
+        box.appendChild(el("p", "", "Read our " + entries.length + (entries.length === 1 ? " comment" : " comments")));
+        var b = el("button", "fb-write", "Write a comment"); b.type = "button";
+        b.addEventListener("click", openDialog);
+        box.appendChild(b);
+      }
+
+      function render() {
+        renderSummary();
+        rowsEl.textContent = "";
+        if (!entries.length) { rowsEl.appendChild(el("li", "fb-empty", "No comments yet. Be the first!")); }
+        entries.slice(0, MAX_SHOWN).forEach(function (c) {
+          var li = el("li", "fb-row"), top = el("div", "fb-top"), who = el("div");
+          var av = el("span", "fb-av", c.name.charAt(0).toUpperCase()); av.style.background = COLORS[c.name.charCodeAt(0) % COLORS.length];
+          who.appendChild(el("div", "fb-who", c.name));
+          if (c.date) who.appendChild(el("div", "fb-when", c.date));
+          top.appendChild(av); top.appendChild(who);
+          li.appendChild(top); li.appendChild(stars(c.rating)); li.appendChild(el("p", "fb-msg", c.comment));
+          if (c.reply) {
+            var foot = el("div", "fb-foot"), btn = el("button", "fb-vr"), r = el("p", "fb-reply");
+            btn.type = "button"; btn.setAttribute("aria-expanded", "false"); btn.innerHTML = BUBBLE;
+            var lbl = el("span", "", "View reply"); btn.appendChild(lbl);
+            r.hidden = true; r.appendChild(el("b", "", "RaXa: ")); r.appendChild(document.createTextNode(c.reply));
+            btn.addEventListener("click", function () {
+              var open = r.hidden; r.hidden = !open; btn.setAttribute("aria-expanded", open ? "true" : "false"); lbl.textContent = open ? "Hide reply" : "View reply";
+            });
+            foot.appendChild(btn); foot.appendChild(r); li.appendChild(foot);
+          }
+          rowsEl.appendChild(li);
+        });
+        note.textContent = usingFake ? "Sample comments shown until the first real one arrives." : "";
+      }
+
+      // ---- load ----
+      function load() {
+        var url = API + "?table=" + encodeURIComponent(TABLE) + "&limit=" + LIMIT;
+        return fetch(url).then(function (r) { return r.json(); }).then(function (res) {
+          if (!res || !res.ok) throw new Error((res && res.error) || "request failed");
+          var list = (res.data || []).map(fromRow).filter(function (c) { return c.comment; });
+          list.reverse();                     // newest first
+          if (list.length) { entries = list; usingFake = false; } else { entries = FABRICATED.slice(); usingFake = true; }
+        }).catch(function (ex) { console.warn("RaXa comments:", ex); entries = FABRICATED.slice(); usingFake = true; })
+          .then(render);
+      }
+
+      // ---- send to the real table ----
+      var headersP = null;
+      function getHeaders() {
+        if (headersP) return headersP;
+        var url = API + "?action=headers&table=" + encodeURIComponent(TABLE);
+        headersP = fetch(url).then(function (r) { return r.json(); }).then(function (res) {
+          if (!res || !res.ok) throw new Error((res && res.error) || "could not read headers");
+          return res.headers;
+        }).catch(function (ex) { headersP = null; throw ex; });
+        return headersP;
+      }
+      // map our values onto the sheet's headers by normalized name; the ID column is generated here
+      function buildRecord(email, rating, comment) {
+        return getHeaders().then(function (headers) {
+          var rec = {}, vals = { email: email, rating: rating, message: comment, comment: comment, reply: "", dateandtime: stamp(), datetime: stamp() };
+          headers.forEach(function (h) {
+            var k = norm(h);
+            if (vals.hasOwnProperty(k)) rec[h] = vals[k];
+            else if (/id$/.test(k)) rec[h] = "C" + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 5).toUpperCase();
+          });
+          return rec;
+        });
+      }
+      function say(msg, cls) { status.textContent = msg; status.className = "fb-status" + (cls ? " " + cls : ""); }
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var email = form.elements.email.value.trim(), comment = form.elements.comment.value.trim();
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || !comment) { say("Please add a valid email and a comment.", "err"); return; }
+                submit.disabled = true; say("Sending\u2026");
+        // text/plain keeps this a "simple" request so Apps Script needs no CORS preflight
+        buildRecord(email, rating, comment).then(function (record) {
+          return fetch(API, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+                     body: JSON.stringify({ action: "create", table: TABLE, data: record }) });
+        })
+          .then(function (r) { return r.json(); })
+          .then(function (res) {
+            if (!res || !res.ok) throw new Error((res && res.error) || "request failed");
+            if (usingFake) { entries = []; usingFake = false; }
+            entries.unshift({ name: maskEmail(email), comment: comment, rating: rating, reply: "", date: fmtDate(stamp()) });
+            render(); form.reset(); setRating(0); say("Thank you! Your comment was sent.", "ok"); setTimeout(closeDialog, 1400);
+          })
+          .catch(function (ex) { console.warn("RaXa comments:", ex); say("Could not send: " + (ex && ex.message ? ex.message : "unknown error"), "err"); })
+          .then(function () { submit.disabled = false; });
+      });
+
+      load();
+    })();
+  </script>
+</body>
+</html>
