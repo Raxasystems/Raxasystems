@@ -111,7 +111,7 @@ dialog::backdrop{background:rgba(10,22,36,.6)}
   </div>
 </dialog>
 
-<!-- ENTER CODE + NEW PASSWORD (replaces the separate c_pass.html page) -->
+<!-- ALREADY HAVE A CODE -->
 <dialog id="fcDlg">
   <div class="head"><div><h2>Enter your code</h2><p id="fcSub">Type the 6-character code from your email.</p></div><button class="x" type="button" data-close aria-label="Close">&times;</button></div>
   <div class="body">
@@ -226,21 +226,19 @@ dialog::backdrop{background:rgba(10,22,36,.6)}
       .catch(function (ex) { fail(m, ex); }).then(function () { busy(btn, false); });
   };
 
-  // ---------- enter code (also opened by login.html?code=XXXXXX) ----------
-  function openCodeDialog(prefill) {
+  // ---------- already have a code ----------
+  $("haveCode").onclick = function () {
     $("fpDlg").close(); resetToken = "";
     $("codeForm").hidden = false; $("newPwForm").hidden = true; $("codeForm").reset(); $("newPwForm").reset();
     say($("codeMsg"), ""); say($("npMsg"), ""); $("fcSub").textContent = "Type the 6-character code from your email.";
-    if (prefill) $("fc_code").value = prefill;
     open($("fcDlg")); $("fc_code").focus();
-  }
-  $("haveCode").onclick = function () { openCodeDialog(""); };
+  };
   $("codeForm").onsubmit = function (e) {
     e.preventDefault();
     var m = $("codeMsg"), btn = $("codeBtn"), code = v("fc_code");
     if (!/^[A-Z0-9]{6}$/.test(code)) return say(m, "Enter the 6-character code.");
     say(m, ""); busy(btn, true, "Checking\u2026");
-    // server finds the code in C_Pass, marks it "used" and returns the client info
+    // server finds the code in cpass, marks it "used" and returns the client info
     post({ action: "checkcode", code: code }).then(function (res) {
       var c = res.client || {};
       resetToken = res.resetToken;
@@ -263,12 +261,8 @@ dialog::backdrop{background:rgba(10,22,36,.6)}
         $("password").value = ""; $("username").focus();
       }).catch(function (ex) { fail(m, ex); }).then(function () { busy(btn, false); });
   };
-
-  // ---------- deep links ----------
   if (location.hash === "#signup") $("signupBtn").click();
   if (location.hash === "#forgot") $("forgotBtn").click();
-  var qc = new URLSearchParams(location.search).get("code");
-  if (qc) openCodeDialog(qc.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6));
 })();
 </script>
 </body>

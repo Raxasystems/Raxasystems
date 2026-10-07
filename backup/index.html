@@ -405,12 +405,13 @@
     .fb-lead { margin: 0 0 clamp(24px, 4vw, 40px); color: var(--sub); max-width: 760px; }
     .fb-grid {
       display: grid; grid-template-columns: minmax(0, 1fr);
-      grid-template-areas: "brand" "list" "text";
+      grid-template-areas: "brand" "list" "text" "qr";
       gap: clamp(20px, 3vw, 36px) clamp(20px, 4vw, 56px); align-items: start;
     }
         .fb-brand { grid-area: brand; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; }
     .fb-list  { grid-area: list; }
     .fb-text  { grid-area: text; }
+    .fb-qr    { grid-area: qr; justify-self: end; text-align: center; }
 
     .fb-card { background: var(--bg); border: 1px solid color-mix(in srgb, var(--rx-blue) 30%, transparent); border-radius: 20px; box-shadow: 0 8px 24px rgba(8, 18, 30, .10); }
     .fb-form { display: flex; flex-direction: column; gap: 14px; padding: clamp(16px, 2.4vw, 28px); }
@@ -459,6 +460,9 @@
 
     .fb-text { min-height: 120px; padding: clamp(14px, 2vw, 24px); color: var(--ink); }
     .fb-text p { margin: 0; color: var(--sub); }
+    .fb-qr-box { width: clamp(150px, 18vw, 200px); aspect-ratio: 1; display: grid; place-items: center; background: #fff; color: #12263a; border: 4px solid #12263a; border-radius: 16px; font-weight: 800; font-size: clamp(20px, 2vw, 26px); line-height: 1.1; }
+    .fb-qr-box img { width: 100%; height: 100%; object-fit: contain; border-radius: 10px; }
+    .fb-qr figcaption { margin-top: 8px; font-weight: 800; font-size: 15px; }
 
     /* review cards (masonry), summary card, small "View reply" toggle */
     .fb-summary { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 20px; margin-bottom: 14px; text-align: center; }
@@ -497,6 +501,7 @@
     /* proportions: scale logo, text, QR and cards together on every screen size */
     .fb-grid { align-items: center; }
     .fb-when { margin-left: 0; }
+    .fb-qr { justify-self: center; }
     .fb-text p { max-width: 60ch; }
     /* everything centered in one column */
     .fb h2, .fb-lead { text-align: center; }
@@ -520,11 +525,13 @@
       .fb-grid { gap: 20px; }
       .fb-summary { padding: 16px; }
       .fb-row { padding: 14px; }
+      .fb-qr-box { width: 140px; }
     }
 
 
     @media (max-width: 860px) {
-      .fb-grid { grid-template-columns: 1fr; grid-template-areas: "brand" "list" "text"; }
+      .fb-grid { grid-template-columns: 1fr; grid-template-areas: "brand" "list" "text" "qr"; }
+      .fb-qr { justify-self: center; }
     }
 
     /* Users: last section on the page, always dark (ignores the light/dark toggle) */
@@ -840,6 +847,11 @@
           <div class="fb-text" id="fbText">
             <p>RaXa Systems began with two pandas, one big idea and a lot of bamboo. We had no huge team and no big budget. What we had was each other, and the people who believed in us along the way: our first users, our friends, and everyone who took the time to tell us what worked and what didn&rsquo;t. Every comment on this page helped shape what you see today. Two pandas built this, but it took all of you to make it real. Thank you for growing with us. The best is still ahead.</p>
           </div>
+
+          <figure class="fb-qr" style="margin:0">
+            <div class="fb-qr-box" id="fbQr">QR PH<br>CODE</div>
+            <figcaption>Buy us a bamboo</figcaption>
+          </figure>
         </div>
 
         <!-- the comment form pops up from the "Write a comment" button -->
@@ -1279,6 +1291,7 @@
       var MAX_SHOWN = 5;             // cards shown (newest first)
       var TIMEOUT_MS = 8000;         // give up waiting for the sheet after this long (the page already shows cached/sample comments)
       var CACHE_KEY = "raxa-comments-cache-v1", HEAD_KEY = "raxa-comments-headers-v1";
+      var QR_IMAGE = "";             // e.g. "assets/qrph.png" once you have the real QR PH code
 
       // placeholder entries, shown only while the table is empty or cannot be reached
       var FABRICATED = [
@@ -1294,6 +1307,8 @@
           note = document.getElementById("fbNote"), status = document.getElementById("fbStatus"),
           starsEl = document.getElementById("fbStars"), submit = document.getElementById("fbSubmit"),
           rating = 0, entries = [], usingFake = false;
+
+      if (QR_IMAGE) { var qr = document.getElementById("fbQr"), im = document.createElement("img"); im.src = QR_IMAGE; im.alt = "QR PH code"; qr.textContent = ""; qr.appendChild(im); }
 
       // ---- popup ----
       var dlg = document.getElementById("fbDialog");

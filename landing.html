@@ -1,196 +1,101 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Workspace | RaXa Systems</title>
-  <link rel="icon" type="image/png" href="assets/logo.png">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Workspace | RaXa Systems</title>
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<script>
+  // same light/dark choice as the other pages; also loads the matching module stylesheet
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("raxa-theme"); } catch (e) {}
+    if (!t) t = (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+    document.documentElement.dataset.theme = t;
+    var l = document.createElement("link");
+    l.rel = "stylesheet"; l.id = "moduleCss"; l.href = "assets/module1" + t + ".css";
+    document.head.appendChild(l);
+  })();
+</script>
+<style>
+:root{--bg:#fff;--sec:#f1f6fc;--ink:#12263a;--sub:#4a5d70;--rx-blue:#2f72bf;--rx-lime:#95d600;--rx-ico:#1f64ad;--rx-tile-bg:#fff;--rx-tile-text:#12263a;--rx-cloud-1:#fff;--rx-cloud-2:#eaf2fb;--trial:#ff7a45;--trial-late:#ff4d4f;--nav-bg:#12263a;--line:#c5d3e2}
+:root[data-theme="dark"]{--bg:#0b1826;--sec:#0f2031;--ink:#eef1f7;--sub:#9fb2c6;--rx-blue:#3d86d6;--rx-ico:#7db8f0;--rx-tile-bg:#14293e;--rx-tile-text:#eef1f7;--rx-cloud-1:#1a3652;--rx-cloud-2:#11263a;--line:#2c4a68}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100dvh;display:flex;flex-direction:column;background:var(--sec);color:var(--ink);font:500 clamp(16px,.4vw + 14px,18px)/1.5 "Plus Jakarta Sans",system-ui,sans-serif}
+button{font-family:inherit}
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+/* top bar */
+.nav{position:sticky;top:0;z-index:500;display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-height:64px;padding:8px clamp(16px,5vw,64px);padding-top:max(8px,env(safe-area-inset-top,0px));background:var(--nav-bg)}
+.user{display:flex;align-items:center;gap:12px;min-width:0;padding:4px 10px 4px 4px;background:none;border:0;border-radius:99px;color:inherit;text-align:left;cursor:pointer}
+.user:hover{background:rgba(255,255,255,.09)}
+.avatar{flex:none;display:grid;place-items:center;width:40px;height:40px;background:var(--rx-lime);color:#12263a;border-radius:50%;font-weight:800;font-size:17px}
+.who-name{display:block;color:#eef1f7;font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:min(46vw,320px)}
+.who-id{display:block;color:#9fb2c6;font-weight:700;font-size:12.5px}
+.who-id a{color:inherit}
+.trial{padding:.45em 1em;color:var(--trial);border:2px solid var(--trial);border-radius:99px;font:800 14px inherit;white-space:nowrap}
+.trial.is-ended{color:var(--trial-late);border-color:var(--trial-late)}
+.nav-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+.logout,.theme{background:transparent;color:#eef1f7;border:2px solid var(--rx-lime);cursor:pointer}
+.logout{padding:.5em 1.1em;border-radius:99px;font:700 14px inherit;text-decoration:none;white-space:nowrap}
+.theme{display:grid;place-items:center;width:40px;height:40px;padding:0;border-radius:50%}
+.logout:hover,.theme:hover{background:var(--rx-lime);color:#12263a}
+.theme svg{width:20px;height:20px}
+.theme .i-sun{display:none}
+:root[data-theme="dark"] .theme .i-sun{display:block}
+:root[data-theme="dark"] .theme .i-moon{display:none}
 
-  <link rel="preconnect" href="https://script.google.com">
-  <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+/* page */
+.band{flex:1;padding:clamp(28px,5vw,64px) clamp(16px,5vw,64px)}
+.wrap{max-width:1280px;margin:0 auto}
+.band h2{margin:0 0 6px;font-size:clamp(32px,5vw,56px);letter-spacing:-.03em;font-weight:800}
+.band p.lead{margin:0 0 28px;color:var(--sub)}
+:is(a,button):focus-visible{outline:3px solid #ffb703;outline-offset:3px}
 
-  <!-- same theme choice as index.html / login.html (light / dark) -->
-  <script>
-    (function () {
-      var t = null;
-      try { t = localStorage.getItem("raxa-theme"); } catch (e) {}
-      if (!t) t = (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
-      document.documentElement.dataset.theme = t;
-      // load only the stylesheet for the active theme (module1dark.css / module1light.css)
-      var l = document.createElement("link");
-      l.rel = "stylesheet"; l.id = "moduleCss"; l.href = "assets/module1" + t + ".css";
-      document.head.appendChild(l);
-    })();
-  </script>
-
-  <style>
-    :root {
-      --bg: #ffffff;
-      --sec: #f1f6fc;
-      --ink: #12263a;
-      --sub: #4a5d70;
-      --rx-blue: #2f72bf;
-      --rx-lime: #95d600;
-      --rx-ico: #1f64ad;
-      --rx-tile-bg: #ffffff;
-      --rx-tile-text: #12263a;
-      --rx-cloud-1: #ffffff;
-      --rx-cloud-2: #eaf2fb;
-      --trial: #ff7a45;
-      --trial-late: #ff4d4f;
-      --nav-bg: #12263a;
-    }
-    :root[data-theme="dark"] {
-      --bg: #0b1826;
-      --sec: #0f2031;
-      --ink: #eef1f7;
-      --sub: #9fb2c6;
-      --rx-blue: #3d86d6;
-      --rx-ico: #7db8f0;
-      --rx-tile-bg: #14293e;
-      --rx-tile-text: #eef1f7;
-      --rx-cloud-1: #1a3652;
-      --rx-cloud-2: #11263a;
-    }
-
-    * { box-sizing: border-box; }
-    html, body { margin: 0; }
-    body {
-      min-height: 100vh;
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      background: var(--sec);
-      color: var(--ink);
-      font: 500 clamp(16px, .4vw + 14px, 18px)/1.5 "Plus Jakarta Sans", system-ui, sans-serif;
-    }
-
-    /* ---------- Top nav: user + account ID, then the trial countdown ---------- */
-    .nav {
-      position: sticky; top: 0; z-index: 500;
-      display: flex; align-items: center; gap: clamp(10px, 2vw, 20px); flex-wrap: wrap;
-      min-height: 64px;
-      padding: 8px clamp(16px, 5vw, 64px);
-      padding-top: max(8px, env(safe-area-inset-top, 0px));
-      background: var(--nav-bg);
-      box-shadow: 0 2px 14px rgba(8, 18, 30, .25);
-    }
-    :root[data-theme="dark"] .nav { border-bottom: 1px solid #24405a; }
-
-    .user { display: flex; align-items: center; gap: 12px; min-width: 0; }
-    .avatar {
-      flex: none;
-      display: grid; place-items: center;
-      width: 40px; height: 40px;
-      background: var(--rx-lime); color: #12263a;
-      border-radius: 50%;
-      font-weight: 800; font-size: 17px;
-    }
-    .who { min-width: 0; line-height: 1.2; }
-    .who-name {
-      display: block;
-      color: #eef1f7; font-weight: 800; font-size: clamp(14px, .4vw + 13px, 16px);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      max-width: min(46vw, 320px);
-    }
-    .who-id { display: block; color: #9fb2c6; font-weight: 700; font-size: 12.5px; }
-    .who-id a { color: inherit; }
-
-    .trial {
-      display: inline-block;
-      padding: .45em 1em;
-      color: var(--trial);
-      border: 2px solid var(--trial);
-      border-radius: 99px;
-      font: 800 clamp(13px, .3vw + 12px, 15px) "Plus Jakarta Sans", system-ui, sans-serif;
-      font-variant-numeric: tabular-nums;
-      white-space: nowrap;
-    }
-    .trial.is-ended { color: var(--trial-late); border-color: var(--trial-late); }
-    .trial.is-loading { opacity: .6; }
-
-    /* same pill as the Sign in button on index.html: lime outline, lime fill on hover */
-    .nav-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-    .logout {
-      padding: .5em clamp(12px, 1.4vw, 18px);
-      background: transparent;
-      color: #eef1f7;
-      border: 2px solid var(--rx-lime);
-      border-radius: 99px;
-      font: 700 clamp(13px, .3vw + 12px, 15px) "Plus Jakarta Sans", system-ui, sans-serif;
-      text-decoration: none;
-      white-space: nowrap;
-      cursor: pointer;
-      transition: background .15s, color .15s;
-    }
-    .logout:hover, .logout:focus-visible { background: var(--rx-lime); color: #12263a; }
-
-    /* sun / moon toggle: shows the moon in light theme (go dark) and the sun in dark theme (go light) */
-    .theme {
-      display: grid; place-items: center;
-      width: 40px; height: 40px; padding: 0;
-      background: transparent; color: #eef1f7;
-      border: 2px solid var(--rx-lime); border-radius: 50%;
-      cursor: pointer;
-      transition: background .15s, color .15s;
-    }
-    .theme:hover, .theme:focus-visible { background: var(--rx-lime); color: #12263a; }
-    .theme svg { width: 20px; height: 20px; }
-    .theme .i-sun { display: none; }
-    :root[data-theme="dark"] .theme .i-sun { display: block; }
-    :root[data-theme="dark"] .theme .i-moon { display: none; }
-
-    /* ---------- Page: the module cloud (same markup + module1light.css as index.html) ---------- */
-    .wrap { max-width: 1280px; margin: 0 auto; }
-    .band {
-      flex: 1;
-      padding: clamp(28px, 5vw, 64px) clamp(16px, 5vw, 64px) calc(clamp(32px, 6vw, 72px) + env(safe-area-inset-bottom, 0px));
-    }
-    .band h2 { margin: 0 auto 6px; max-width: 1280px; font-size: clamp(32px, 5vw, 56px); letter-spacing: -.03em; font-weight: 800; }
-    .band > .wrap > p { margin: 0 0 28px; color: var(--sub); max-width: 760px; }
-
-    :is(a, button):focus-visible { outline: 3px solid #ffb703; outline-offset: 3px; }
-  </style>
+/* read-only profile pop-up */
+dialog{width:min(400px,calc(100% - 24px));padding:0;background:var(--bg);color:var(--ink);border:2px solid var(--line);border-radius:24px}
+dialog::backdrop{background:rgba(8,18,30,.58)}
+.pf-head{display:flex;justify-content:space-between;align-items:center;padding:18px 20px 0}
+.pf-head h3{margin:0;font-size:22px;font-weight:800}
+.pf-x{width:36px;height:36px;background:var(--sec);color:var(--ink);border:2px solid var(--line);border-radius:50%;font-size:18px;cursor:pointer}
+.pf-body{margin:0;padding:12px 20px 20px}
+.pf-row{padding:10px 0;border-top:1px solid var(--line)}
+.pf-row:first-child{border-top:0}
+.pf-lab{display:block;color:var(--sub);font-weight:700;font-size:12.5px}
+.pf-val{display:block;font-weight:800;overflow-wrap:anywhere}
+</style>
 </head>
 <body>
 
-  <header class="nav" id="top">
-    <div class="user">
-      <span class="avatar" id="avatar" aria-hidden="true">R</span>
-      <div class="who">
-        <span class="who-name" id="userName">Loading&hellip;</span>
-        <span class="who-id" id="accountId">&nbsp;</span>
-      </div>
-    </div>
-    <span class="trial is-loading" id="trial" role="status" aria-live="polite">Trial: -- days left</span>
-    <div class="nav-actions">
-      <button class="theme" id="themeBtn" type="button" aria-label="Switch to dark theme">
-        <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 13.5A9 9 0 1 1 10.5 3a7 7 0 0 0 10.5 10.5Z"/></svg>
-        <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-      </button>
-      <a class="logout" id="logoutBtn" href="login.html">Log out</a>
-    </div>
-  </header>
+<header class="nav">
+  <button class="user" id="profileBtn" type="button" aria-haspopup="dialog" aria-label="Open your profile">
+    <span class="avatar" id="avatar" aria-hidden="true">R</span>
+    <span>
+      <span class="who-name" id="userName">Loading&hellip;</span>
+      <span class="who-id" id="accountId">&nbsp;</span>
+    </span>
+  </button>
+  <span class="trial" id="trial" role="status">Trial: -- days left</span>
+  <div class="nav-actions">
+    <button class="theme" id="themeBtn" type="button" aria-label="Switch theme">
+      <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <a class="logout" id="logoutBtn" href="login.html">Log out</a>
+  </div>
+</header>
 
-  <main style="flex:1;display:flex;flex-direction:column">
-
-    <!-- Panda cloud with modules (module1light.css / module1dark.css) -->
-    <section class="band" id="modules" style="flex:1">
-      <div class="wrap">
-        <h2>Your workspace</h2>
-        <p>Open any module from the cloud.</p>
-
-        <div class="rx-map">
+<main class="band">
+  <div class="wrap">
+    <h2>Your workspace</h2>
+    <p class="lead">Open any module from the cloud.</p>
+    <div class="rx-map">
           <div class="rx-cloudbox">
 
             <!-- desktop: wires + cloud -->
             <svg class="rx-wires" viewBox="0 0 1600 800" aria-hidden="true">
               <defs>
-                <filter id="rxGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
                 <filter id="rxShadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#14283c" flood-opacity=".18"/></filter>
                 <linearGradient id="rxCloudFill" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0" style="stop-color:var(--rx-cloud-1,#fff)"/>
@@ -206,13 +111,13 @@
               </defs>
 
               <g>
-                <use href="#rxW1" class="rx-wire"/><use href="#rxW1" class="rx-flow"/>
-                <use href="#rxW2" class="rx-wire"/><use href="#rxW2" class="rx-flow"/>
-                <use href="#rxW3" class="rx-wire"/><use href="#rxW3" class="rx-flow"/>
-                <use href="#rxW4" class="rx-wire"/><use href="#rxW4" class="rx-flow"/>
-                <use href="#rxW5" class="rx-wire"/><use href="#rxW5" class="rx-flow"/>
-                <use href="#rxW6" class="rx-wire"/><use href="#rxW6" class="rx-flow"/>
-                <use href="#rxW7" class="rx-wire"/><use href="#rxW7" class="rx-flow"/>
+                <use href="#rxW1" class="rx-wire"/>
+                <use href="#rxW2" class="rx-wire"/>
+                <use href="#rxW3" class="rx-wire"/>
+                <use href="#rxW4" class="rx-wire"/>
+                <use href="#rxW5" class="rx-wire"/>
+                <use href="#rxW6" class="rx-wire"/>
+                <use href="#rxW7" class="rx-wire"/>
               </g>
 
               <g filter="url(#rxShadow)">
@@ -221,13 +126,13 @@
               </g>
 
               <g>
-                <circle class="rx-dot-glow" cx="435"  cy="260" r="13" filter="url(#rxGlow)"/><circle class="rx-dot" cx="435"  cy="260" r="7"/>
-                <circle class="rx-dot-glow" cx="270"  cy="400" r="13" filter="url(#rxGlow)"/><circle class="rx-dot" cx="270"  cy="400" r="7"/>
-                <circle class="rx-dot-glow" cx="270"  cy="660" r="13" filter="url(#rxGlow)"/><circle class="rx-dot" cx="270"  cy="660" r="7"/>
-                <circle class="rx-dot-glow" cx="800"  cy="232" r="13" filter="url(#rxGlow)"/><circle class="rx-dot" cx="800"  cy="232" r="7"/>
-                <circle class="rx-dot-glow" cx="1165" cy="260" r="13" filter="url(#rxGlow)"/><circle class="rx-dot" cx="1165" cy="260" r="7"/>
-                <circle class="rx-dot-glow" cx="1330" cy="400" r="13" filter="url(#rxGlow)"/><circle class="rx-dot" cx="1330" cy="400" r="7"/>
-                <circle class="rx-dot-glow" cx="1330" cy="660" r="13" filter="url(#rxGlow)"/><circle class="rx-dot" cx="1330" cy="660" r="7"/>
+                <circle class="rx-dot" cx="435"  cy="260" r="7"/>
+                <circle class="rx-dot" cx="270"  cy="400" r="7"/>
+                <circle class="rx-dot" cx="270"  cy="660" r="7"/>
+                <circle class="rx-dot" cx="800"  cy="232" r="7"/>
+                <circle class="rx-dot" cx="1165" cy="260" r="7"/>
+                <circle class="rx-dot" cx="1330" cy="400" r="7"/>
+                <circle class="rx-dot" cx="1330" cy="660" r="7"/>
               </g>
             </svg>
 
@@ -249,7 +154,7 @@
             <div class="rx-logo" role="img" aria-label="RaXa"></div>
           </div>
 
-          <!-- Module tiles: change each href to wherever that module should open -->
+          <!-- Module tiles: change each href to where that module should open -->
             <nav class="rx-tiles" aria-label="Modules">
 
               <a class="rx-tile" href="#human-resource" data-module="human-resource" style="--x:19.94%;--y:7.5%">
@@ -326,169 +231,87 @@
               </a>
 
             </nav>
-        </div>
-      </div>
-    </section>
+  </div>
+</main>
 
-  </main>
+<dialog id="pfDlg" aria-labelledby="pfTitle">
+  <div class="pf-head"><h3 id="pfTitle">Profile</h3><button class="pf-x" id="pfClose" type="button" aria-label="Close">&times;</button></div>
+  <div class="pf-body" id="pfBody"></div>
+</dialog>
 
-  <script>
-    (function () {
-      // ---- settings --------------------------------------------------------
-      var API = "https://script.google.com/macros/s/AKfycbxKI9W4narvcHMqxpW1nM8sSsLmcIGCywGV5-8iYpgi15cAW9SVXp7UEr7bWwWgieT10w/exec";
-      var TRIAL_DAYS = 52;
-      var FRESH_MS = 10 * 60 * 1000;   // cached data newer than this skips the API call
-      // ---------------------------------------------------------------------
+<script>
+(function () {
+  var API = "https://script.google.com/macros/s/AKfycbxKI9W4narvcHMqxpW1nM8sSsLmcIGCywGV5-8iYpgi15cAW9SVXp7UEr7bWwWgieT10w/exec";
+  var TRIAL_DAYS = 52;
+  var $ = function (i) { return document.getElementById(i); };
+  function store(k) { try { return sessionStorage.getItem(k) || ""; } catch (e) { return ""; } }
+  function clearSession() { try { ["raxa-token", "raxa-account-id", "raxa-user-name"].forEach(function (k) { sessionStorage.removeItem(k); }); } catch (e) {} }
+  function post(p) {
+    return fetch(API, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(p) }).then(function (r) { return r.json(); });
+  }
 
-      var elName  = document.getElementById("userName"),
-          elId    = document.getElementById("accountId"),
-          elAv    = document.getElementById("avatar"),
-          elTrial = document.getElementById("trial");
+  // theme: switches the page and the module stylesheet together
+  function applyTheme(t) {
+    document.documentElement.dataset.theme = t;
+    var css = $("moduleCss"), href = "assets/module1" + t + ".css";
+    if (css && css.getAttribute("href") !== href) css.setAttribute("href", href);
+    try { localStorage.setItem("raxa-theme", t); } catch (e) {}
+  }
+  $("themeBtn").onclick = function () { applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"); };
 
-      // ---- IndexedDB: one record ("client") holds the signed-in account --------
-      // { id, name, signup, savedAt }  -- written by login.html, refreshed here
-      var DB = "raxa", STORE = "kv", KEY = "client";
-      function kv(mode, fn) {
-        return new Promise(function (resolve) {
-          if (!window.indexedDB) return resolve(null);
-          var o = indexedDB.open(DB, 1);
-          o.onupgradeneeded = function () { o.result.createObjectStore(STORE); };
-          o.onerror = function () { resolve(null); };
-          o.onsuccess = function () {
-            try {
-              var tx = o.result.transaction(STORE, mode), r = fn(tx.objectStore(STORE));
-              tx.oncomplete = function () { o.result.close(); resolve(r && r.result !== undefined ? r.result : null); };
-              tx.onerror = tx.onabort = function () { o.result.close(); resolve(null); };
-            } catch (e) { resolve(null); }
-          };
-        });
-      }
-      function dbGet()    { return kv("readonly",  function (st) { return st.get(KEY); }); }
-      function dbSet(v)   { return kv("readwrite", function (st) { return st.put(v, KEY); }); }
-      function dbClear()  { return kv("readwrite", function (st) { return st.delete(KEY); }); }
+  // log out: end the server session, forget it here, go back to sign in
+  $("logoutBtn").onclick = function (e) {
+    e.preventDefault();
+    var tk = store("raxa-token"), href = this.getAttribute("href");
+    if (tk) post({ action: "logout", token: tk }).catch(function () {});
+    clearSession();
+    setTimeout(function () { location.replace(href); }, 200);
+  };
 
-      // Light / dark toggle: switches the page theme and the module stylesheet together
-      // (theme stays in localStorage on purpose: it must be readable synchronously to avoid a flash)
-      var themeBtn = document.getElementById("themeBtn"), moduleCss = document.getElementById("moduleCss");
-      function applyTheme(t) {
-        document.documentElement.dataset.theme = t;
-        var href = "assets/module1" + t + ".css";
-        if (moduleCss.getAttribute("href") !== href) moduleCss.setAttribute("href", href);
-        themeBtn.setAttribute("aria-label", t === "dark" ? "Switch to light theme" : "Switch to dark theme");
-        try { localStorage.setItem("raxa-theme", t); } catch (e) {}
-      }
-      applyTheme(document.documentElement.dataset.theme);
-      themeBtn.addEventListener("click", function () {
-        applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
-      });
+  // header
+  function showUser(name, id) {
+    $("userName").textContent = name;
+    $("accountId").textContent = id ? "Account ID: " + id : "";
+    $("avatar").textContent = (name.trim().charAt(0) || "R").toUpperCase();
+  }
+  function fail(msg) { showUser(msg, ""); $("accountId").innerHTML = '<a href="login.html">Sign in</a>'; }
+  function showTrial(signup) {
+    var d = new Date(signup);
+    if (isNaN(d)) return;
+    var today = new Date(); today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    var left = Math.max(0, TRIAL_DAYS - Math.max(0, Math.round((today - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / 86400000)));
+    $("trial").textContent = "Trial: " + (left < 10 ? "0" : "") + left + " days left";
+    $("trial").classList.toggle("is-ended", left === 0);
+  }
 
-      // Log out: forget the saved account, then go back to the sign-in page
-      document.getElementById("logoutBtn").addEventListener("click", function (e) {
-        e.preventDefault();
-        var href = this.getAttribute("href");
-        var tk = store("raxa-token");   // ask the server to end the session too
-        if (tk) { try { fetch(API, { method: "POST", keepalive: true, headers: { "Content-Type": "text/plain;charset=utf-8" },
-                        body: JSON.stringify({ action: "logout", token: tk }) }).catch(function () {}); } catch (x) {} }
-        try { ["raxa-account-id", "raxa-user-name", "raxa-token"].forEach(function (k) { sessionStorage.removeItem(k); localStorage.removeItem(k); }); } catch (x) {}
-        dbClear().then(function () { location.replace(href); });
-        setTimeout(function () { location.replace(href); }, 800);   // never get stuck
-      });
+  var token = store("raxa-token"), id = store("raxa-account-id"), client = null;
+  if (!token) return fail("Please sign in");
+  showUser(store("raxa-user-name") || "Loading\u2026", id);
 
-      function norm(s) { return String(s).toLowerCase().replace(/[^a-z0-9]/g, ""); }
-      function pick(row, names) {
-        for (var n = 0; n < names.length; n++)
-          for (var k in row)
-            if (norm(k) === names[n] && row[k] !== "" && row[k] != null) return String(row[k]).trim();
-        return "";
-      }
-      // sign-up date column of the Clients row (loose match, then any column with "date" in its name)
-      function pickDate(row) {
-        var v = pick(row, ["signupdate", "dateregistered", "registrationdate", "datecreated", "createdat", "startdate", "trialstart", "date"]);
-        if (v) return v;
-        for (var k in row) if (/date/i.test(k) && row[k]) return row[k];
-        return "";
-      }
+  // client row for the signed-in account (the server finds it from the token)
+  post({ action: "me", token: token }).then(function (res) {
+    if (!res || !res.ok) { if (res && res.code === "unauthorized") { clearSession(); throw new Error("Session expired"); } throw new Error((res && res.error) || "Account not found"); }
+    client = res.client || {};
+    var date = "";
+    for (var k in client) if (/date|created|signup/i.test(k) && client[k]) { date = client[k]; break; }
+    if (date) showTrial(date);
+  }).catch(function (ex) { if (/expired/i.test(ex.message)) fail("Session expired"); });
 
-      // Sheet dates arrive as "2026-08-20T16:00:00.000Z" (UTC) or plain "2026-08-20" -> local midnight of that day
-      function parseDay(v) {
-        if (!v) return null;
-        var s = String(v), d;
-        var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
-        d = m ? new Date(+m[1], +m[2] - 1, +m[3]) : new Date(s);
-        return isNaN(d) ? null : new Date(d.getFullYear(), d.getMonth(), d.getDate());
-      }
-      function ymd(d) { return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
-
-      function daysLeft(signup) {
-        var t = new Date(); t = new Date(t.getFullYear(), t.getMonth(), t.getDate());
-        var used = Math.round((t - signup) / 86400000);
-        return Math.max(0, TRIAL_DAYS - Math.max(0, used));
-      }
-
-      function showTrial(n) {
-        elTrial.classList.remove("is-loading");
-        elTrial.classList.toggle("is-ended", n === 0);
-        elTrial.textContent = "Trial: " + (n < 10 ? "0" : "") + n + " days left";
-      }
-
-      function showUser(name, id) {
-        elName.textContent = name;
-        elId.textContent = id ? "Account ID: " + id : "";
-        elAv.textContent = (name.trim().charAt(0) || "R").toUpperCase();
-      }
-
-      function fail(msg) {
-        showUser(msg, "");
-        elId.innerHTML = '<a href="login.html">Sign in</a>';
-        elTrial.classList.remove("is-loading");
-        elTrial.textContent = "Trial: -- days left";
-      }
-
-      function store(k) { try { return sessionStorage.getItem(k) || localStorage.getItem(k) || ""; } catch (e) { return ""; } }
-
-      // Account ID is for display only (saved at sign-in). It is never trusted: the server picks the
-      // account from the session token, so editing ?id= or storage cannot show someone else's data.
-      var urlId = String(store("raxa-account-id") || "").trim();
-
-      dbGet().then(function (c) {
-        var token = store("raxa-token");
-        if (!token) { dbClear(); return fail("Please sign in"); }
-        var id = urlId || (c && c.id) || "";
-        if (!id) return fail("No account found");
-        if (c && String(c.id) !== id) c = null;            // cache belongs to another account
-
-        // 1) paint from IndexedDB immediately
-        var cd = c && parseDay(c.signup);
-        showUser((c && c.name) || store("raxa-user-name") || "Loading\u2026", id);
-        if (cd) showTrial(daysLeft(cd));
-
-        // 2) cache is fresh and complete -> no API call at all
-        if (cd && c.savedAt && Date.now() - c.savedAt < FRESH_MS) return;
-
-        // 3) otherwise refresh from the API in the background
-        fetch(API, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
-                     body: JSON.stringify({ action: "read", table: "Clients", token: token }) })
-          .then(function (r) { return r.json(); })
-          .then(function (res) {
-            if (res && res.code === "unauthorized") { var ue = new Error("session expired"); ue.gone = true; ue.expired = true; throw ue; }
-            if (!res || !res.ok) throw new Error((res && res.error) || "request failed");
-            var row = res.data && res.data[0];
-            if (!row) { var nf = new Error("no client with Account ID " + id); nf.gone = true; throw nf; }
-            var name = (c && c.name) || store("raxa-user-name") || pick(row, ["name", "fullname", "clientname", "companyname", "company", "username"]) || "Account " + id;
-            var d = parseDay(pickDate(row));
-            if (!d) throw new Error("no sign-up date found in the Clients row");
-            showUser(name, id);
-            showTrial(daysLeft(d));
-            dbSet({ id: id, name: name, signup: ymd(d), savedAt: Date.now() });
-          })
-          .catch(function (ex) {
-            console.warn("RaXa landing:", ex);
-            if (ex && ex.gone) dbClear();
-            if (ex && ex.expired) { try { ["raxa-token", "raxa-account-id", "raxa-user-name"].forEach(function (k) { sessionStorage.removeItem(k); localStorage.removeItem(k); }); } catch (x) {} }
-            if (!cd || (ex && ex.gone)) fail(ex && ex.expired ? "Session expired" : "Account not found");   // keep cached view if only the network failed
-          });
-      });
-    })();
-  </script>
+  // profile pop-up (read only)
+  $("profileBtn").onclick = function () {
+    var body = $("pfBody"); body.textContent = "";
+    var rows = client || { "Account ID": id, Name: store("raxa-user-name") };
+    Object.keys(rows).forEach(function (k) {
+      if (/pass|pwd|hash|token|secret|salt|otp/i.test(k) || rows[k] === "" || rows[k] == null) return;
+      var r = document.createElement("div"), l = document.createElement("span"), v = document.createElement("span");
+      r.className = "pf-row"; l.className = "pf-lab"; v.className = "pf-val";
+      l.textContent = k; v.textContent = String(rows[k]); r.appendChild(l); r.appendChild(v); body.appendChild(r);
+    });
+    $("pfDlg").showModal();
+  };
+  $("pfClose").onclick = function () { $("pfDlg").close(); };
+  $("pfDlg").addEventListener("mousedown", function (e) { if (e.target === this) this.close(); });
+})();
+</script>
 </body>
 </html>
